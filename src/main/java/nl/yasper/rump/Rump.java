@@ -45,6 +45,10 @@ public class Rump {
         return DEFAULT_CLIENT.request(path, method, requestBody, responseType);
     }
 
+    public static <T> CompletableFuture<HttpResponse<T>> getAsync(String path, Class<T> responseType) {
+        return requestAsync(path, RequestMethod.GET, null, responseType);
+    }
+
     public static <T> CompletableFuture<HttpResponse<T>> requestAsync(String path, RequestMethod method, Object requestBody,
                                                                       Class<T> responseType) {
         return ASYNC_CLIENT.request(path, method, requestBody, responseType);
