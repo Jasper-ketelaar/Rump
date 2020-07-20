@@ -6,9 +6,6 @@ Rump is a REST client for Java that attempts to resemble Axios from JavaScript.
 I was working on a project and none of the currently available REST clients for Java seemed to match my needs. I am a pretty big fan of Axios for JavaScript
 so I decided to make a version of that for Java that would fit my needs.
 
-## Usage
-There's three different ways of making REST api calls with Rump:
-
 ## Features
 - Create rest requests synchronously
 - Create rest requests asynchronously
@@ -20,6 +17,9 @@ There's three different ways of making REST api calls with Rump:
 - Custom error handling support
 - Canceling requests
 - Request params
+
+## Usage
+There's three different ways of making REST api calls with Rump:
 
 ### 1. Via the Rump class you can make requests directly.
 
