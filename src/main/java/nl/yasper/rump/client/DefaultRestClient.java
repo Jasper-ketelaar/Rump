@@ -62,7 +62,8 @@ public class DefaultRestClient implements RestClient {
     public <T> HttpResponse<T> request(String path, RequestMethod method, Object requestBody, Class<T> responseType,
                                        RequestConfig... merging) throws IOException {
         RequestConfig config = this.config.merge(merging);
-        URL url = new URL(config.getBaseURL() + path);
+        String urlMergerd = config.getBaseURL() + path + config.getParams().toURLPart();
+        URL url = new URL(urlMergerd);
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
         connection.setRequestMethod(method.toString());
         if (requestBody != null) {

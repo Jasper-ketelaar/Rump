@@ -3,12 +3,15 @@ package nl.yasper.rump.config;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
+import nl.yasper.rump.request.RequestHeaders;
 import nl.yasper.rump.request.RequestMethod;
+import nl.yasper.rump.request.RequestParams;
 import nl.yasper.rump.request.RequestTransformer;
 import nl.yasper.rump.response.JacksonResponseTransformer;
 import nl.yasper.rump.response.ResponseTransformer;
 
 import java.net.HttpURLConnection;
+import java.util.HashMap;
 import java.util.Map;
 
 @Getter
@@ -21,10 +24,11 @@ public class RequestConfig {
     private int timeout;
     private int readTimeout;
 
-    private Map<String, String> requestHeaders;
+    private RequestHeaders requestHeaders = new RequestHeaders();
 
     private boolean useCaches;
 
+    private RequestParams params = new RequestParams();
     private RequestTransformer requestTransformer = (obj, headers) -> obj;
     private ResponseTransformer responseTransformer = new JacksonResponseTransformer();
 
@@ -32,7 +36,7 @@ public class RequestConfig {
 
     public static RequestConfig copyProperties(RequestConfig to, RequestConfig from) {
         return to.setBaseURL(from.getBaseURL())
-                .setRequestHeaders(from.getRequestHeaders())
+                .setRequestHeaders(RequestHeaders.merge(to.getRequestHeaders(), from.getRequestHeaders()))
                 .setMethod(from.getMethod())
                 .setReadTimeout(from.getReadTimeout())
                 .setTimeout(from.getTimeout())
@@ -44,29 +48,11 @@ public class RequestConfig {
     public void applyConfig(HttpURLConnection connection) {
         connection.setConnectTimeout(timeout);
         connection.setReadTimeout(readTimeout);
-        for (String key : requestHeaders.keySet()) {
-            connection.setRequestProperty(key, requestHeaders.get(key));
+        for (String key : requestHeaders.headerKeys()) {
+            connection.setRequestProperty(key, requestHeaders.getHeader(key));
         }
 
         connection.setUseCaches(useCaches);
-    }
-
-    public String getContentType() {
-        return requestHeaders.get("Content-Type");
-    }
-
-    public RequestConfig setContentType(String type) {
-        requestHeaders.put("Content-Type", type);
-        return this;
-    }
-
-    public RequestConfig setContentType(ContentType type) {
-        return setContentType(type.getCode());
-    }
-
-    public RequestConfig setUserAgent(String userAgent) {
-        requestHeaders.put("User-Agent", userAgent);
-        return this;
     }
 
     public RequestConfig merge(RequestConfig... merging) {
@@ -79,18 +65,4 @@ public class RequestConfig {
         return result;
     }
 
-    public enum ContentType {
-        Text("text/plain"),
-        JSON("application/json");
-
-        private String code;
-
-        ContentType(String code) {
-            this.code = code;
-        }
-
-        public String getCode() {
-            return code;
-        }
-    }
 }
