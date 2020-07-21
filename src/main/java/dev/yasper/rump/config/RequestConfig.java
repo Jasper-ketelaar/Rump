@@ -47,7 +47,9 @@ public class RequestConfig {
                 .setTimeout(from.getTimeout())
                 .setRequestTransformer(from.getRequestTransformer())
                 .setResponseTransformer(from.getResponseTransformer())
-                .setUseCaches(from.isUsingCaches());
+                .setUseCaches(from.isUsingCaches())
+                .setProxy(from.getProxy())
+                .setAuthenticator(from.getAuthenticator());
     }
 
     public Authenticator getAuthenticator() {
