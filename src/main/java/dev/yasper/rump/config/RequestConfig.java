@@ -12,6 +12,7 @@ import java.lang.reflect.Field;
 import java.net.Authenticator;
 import java.net.HttpURLConnection;
 import java.net.Proxy;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
@@ -28,25 +29,31 @@ public class RequestConfig {
     private RequestParams params = null;
     private RequestTransformer requestTransformer = null;
     private ResponseTransformer responseTransformer = null;
-    private List<RequestInterceptor> requestInterceptors = null;
-    private List<ResponseInterceptor> responseInterceptors = null;
+    private List<RequestInterceptor> requestInterceptors = new LinkedList<>();
+    private List<ResponseInterceptor> responseInterceptors = new LinkedList<>();
     private RequestMethod method = null;
     private Predicate<Integer> ignoreStatusCode = null;
     private Consumer<HttpURLConnection> connectionConsumer = null;
 
     /**
      * Method to copy properties from a config instance into another config instance. Checks if the values in
-     * from are not null to prevent the config from overwriting all the other values in to.
+     * from are not null to prevent the config from overwriting all the other values in to. We can ignore the type
+     * safety because the fields will always hold the same types.
      *
      * @param to   The RequestConfig to copy the properties into
      * @param from The RequestConfig to copy the properties from
      */
+    @SuppressWarnings({"unchecked", "rawtypes"})
     public static void copyProperties(RequestConfig to, RequestConfig from) {
         for (Field field : from.getClass().getDeclaredFields()) {
             try {
                 field.setAccessible(true);
                 Object value = field.get(from);
-                if (value != null) {
+                Object current = field.get(to);
+                if (value instanceof List && current instanceof List) {
+                    List list = (List) value;
+                    ((List) current).addAll(list);
+                } else if (value != null) {
                     field.set(to, value);
                 }
             } catch (IllegalAccessException e) {

@@ -18,7 +18,7 @@ public class RumpInstanceTest {
                 .setIgnoreStatusCode((code) -> code >= 400)
                 .setBaseURL("https://jsonplaceholder.typicode.com/")
                 .addRequestInterceptor((mergedURL, connection, config1) -> {
-                    if (mergedURL.startsWith("https://www.mydomain.com")) {
+                    if (mergedURL.startsWith("https://www.google.nl")) {
                         connection.setRequestProperty("Authorization", "Bearer myDomainToken");
                     }
                     return true;
