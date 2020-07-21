@@ -64,6 +64,12 @@ public class RequestHeaders {
         return this;
     }
 
+    @Override
+    public String toString() {
+        return "RequestHeaders{" + "headers=" + headers +
+                '}';
+    }
+
     public enum ContentType {
         TEXT("text/plain"),
         JSON("application/json");
