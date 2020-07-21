@@ -1,18 +1,19 @@
 package dev.yasper.rump.client;
 
 import dev.yasper.rump.config.RequestConfig;
+import dev.yasper.rump.exception.HttpStatusCodeException;
 import dev.yasper.rump.interceptor.RequestInterceptor;
 import dev.yasper.rump.interceptor.ResponseInterceptor;
-import dev.yasper.rump.response.ResponseTransformer;
-import dev.yasper.rump.exception.HttpStatusCodeException;
 import dev.yasper.rump.request.RequestMethod;
 import dev.yasper.rump.response.HttpResponse;
 import dev.yasper.rump.response.ResponseBody;
+import dev.yasper.rump.response.ResponseTransformer;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectOutputStream;
 import java.net.HttpURLConnection;
+import java.net.Proxy;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.List;
@@ -73,7 +74,8 @@ public class DefaultRestClient implements RestClient {
         RequestConfig config = this.config.merge(merging);
         String urlMerged = config.getBaseURL() + path + config.getParams().toURLPart();
         URL url = new URL(urlMerged);
-        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+
+        HttpURLConnection connection = openWithProxyIfPresent(url, config.getProxy());
         applyConfig(connection, config);
         if (!beforeRequest(config, urlMerged, connection)) {
             connection.disconnect();
@@ -111,6 +113,14 @@ public class DefaultRestClient implements RestClient {
         return res;
     }
 
+    private HttpURLConnection openWithProxyIfPresent(URL url, Proxy proxy) throws IOException {
+        if (proxy == null) {
+            return (HttpURLConnection) url.openConnection();
+        } else {
+            return (HttpURLConnection) url.openConnection(proxy);
+        }
+    }
+
     private boolean beforeResponse(HttpResponse<?> res) {
         for (ResponseInterceptor interceptor : config.getResponseInterceptors()) {
             if (!interceptor.beforeResponse(res)) {
@@ -134,6 +144,9 @@ public class DefaultRestClient implements RestClient {
     private void applyConfig(HttpURLConnection connection, RequestConfig config) {
         connection.setConnectTimeout(config.getTimeout());
         connection.setReadTimeout(config.getReadTimeout());
+        if (config.getAuthenticator() != null) {
+            connection.setAuthenticator(config.getAuthenticator());
+        }
         for (String key : config.getRequestHeaders().headerKeys()) {
             connection.setRequestProperty(key, config.getRequestHeaders().getHeader(key));
         }
