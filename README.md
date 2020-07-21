@@ -67,6 +67,24 @@ ars.get("posts/1", Post.class).thenAccept(res -> {
 });
 ```
 
+## Request Configuration
+Requests are configured using the `RequestConfig` class. By default request config supports most
+configuratble options for a `HttpURLConnection` however any option not supported by this
+class can be modified using the `connectionConsumer` in `RequestConfig`. I can also add more options
+to the request configuration, just create an issue.
+
+## HttpResponse
+The HttpResponse contains the following values:
+- The response code
+- The response message
+- The config used for the request that generated this response
+- The headers that the server responded with
+- The response body mapped as the type you requested
+
+The HttpResponse object will also be returned in case of an error, however
+the response body will not be mapped to your requested type but will be kept as
+a string.
+
 ## Overriding config values
 Sometimes your default config values, whether they come from a constructed instance or
 simply the default values supplied by Rump, are not enough for a specific request.
@@ -100,6 +118,15 @@ try {
 } catch (IOException e) {
     e.printStackTrace();
 }
+```
+
+### Overriding config defaults
+With an instance created by Rump you can set the defaults yourself by the RequestConfig
+instance you passed. If you want to modify the defaults used by the backing instance for the static
+methods inside `Rump.java` then you can modify the constant `Rump.DEFAULT_CONFIG`. If you want
+to change the default base url for all static methods for example:
+```java 
+Rump.DEFAULT_CONFIG.setBaseURL("https://www.new-default.org");
 ```
 
 ## Interceptors
@@ -154,3 +181,17 @@ Output:
 ```
 [INTERCEPTED] sunt aut facere repellat provident occaecati excepturi optio reprehenderit
 ```
+
+## Error handling
+Response status errors (any response status code above 299) are thrown as `HttpStatusCodeException`. 
+These are thrown as completion errors within the async functionality of Rump. You are able to modify
+what status codes are considered as errors by adjusting `ignoreStatusCode` in `RequestConfig`. For example:
+```java
+RequestConfig config = new RequestConfig()
+        .setIgnoreStatusCode((code) -> code >= 400);
+```
+Config now doesn't throw an error if the status code is between 300 and 399.
+
+The `HttpStatusCodeException` contains a `HttpResponse<String>` where the error body is of string value.
+You can therefore easily inspect values of the error response the same way you would
+check values of a successful response.

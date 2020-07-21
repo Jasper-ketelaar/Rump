@@ -1,6 +1,7 @@
 package nl.yasper.rump.client;
 
 import nl.yasper.rump.config.RequestConfig;
+import nl.yasper.rump.exception.HttpStatusCodeException;
 import nl.yasper.rump.interceptor.RequestInterceptor;
 import nl.yasper.rump.interceptor.ResponseInterceptor;
 import nl.yasper.rump.request.RequestMethod;
@@ -21,6 +22,7 @@ public class DefaultRestClient implements RestClient {
     private static final List<Class<?>> PRIMITIVE_CLASSES = Arrays.asList(
             String.class, Double.class, Integer.class
     );
+    private static final int LAST_SUCCESSFUL_RESPONSE = 299;
     private final RequestConfig config;
 
     public DefaultRestClient(RequestConfig config) {
@@ -85,11 +87,22 @@ public class DefaultRestClient implements RestClient {
             }
         }
 
+        if (connection.getResponseCode() > LAST_SUCCESSFUL_RESPONSE
+                && !config.getIgnoreStatusCode().test(connection.getResponseCode())) {
+            ResponseBody body = new ResponseBody(connection.getInputStream());
+            HttpResponse<String> errorResponse = new HttpResponse<>(
+                    body.getAsString(), connection.getHeaderFields(),
+                    connection.getResponseCode(), connection.getResponseMessage(),
+                    config, urlMerged
+            );
+            throw new HttpStatusCodeException(errorResponse);
+        }
 
         T body = transform(connection.getInputStream(), responseType, config);
         HttpResponse<T> res = new HttpResponse<>(
                 body, connection.getHeaderFields(),
-                connection.getResponseCode(), config, urlMerged
+                connection.getResponseCode(), connection.getResponseMessage(),
+                config, urlMerged
         );
         if (!beforeResponse(res)) {
             return null;
@@ -126,6 +139,7 @@ public class DefaultRestClient implements RestClient {
         }
 
         connection.setUseCaches(config.isUsingCaches());
+        config.getConnectionConsumer().accept(connection);
     }
 
     private <T> T transform(InputStream input, Class<T> responseType, RequestConfig config) throws IOException {

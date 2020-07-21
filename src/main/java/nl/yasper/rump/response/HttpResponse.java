@@ -7,19 +7,25 @@ import java.util.Map;
 
 public class HttpResponse<T> {
 
-    private T body;
     private final Map<String, List<String>> headerFields;
     private final int responseCode;
+    private final String responseMessage;
     private final RequestConfig requestConfig;
     private final String url;
+    private T body;
 
-    public HttpResponse(T body, Map<String, List<String>> headerFields, int responseCode, RequestConfig requestConfig,
+    public HttpResponse(T body, Map<String, List<String>> headerFields, int responseCode, String responseMessage, RequestConfig requestConfig,
                         String url) {
         this.body = body;
         this.headerFields = headerFields;
         this.responseCode = responseCode;
         this.requestConfig = requestConfig;
         this.url = url;
+        this.responseMessage = responseMessage;
+    }
+
+    public String getResponseMessage() {
+        return responseMessage;
     }
 
     public String getUrl() {

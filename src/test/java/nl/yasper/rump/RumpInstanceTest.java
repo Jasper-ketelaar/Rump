@@ -15,6 +15,7 @@ public class RumpInstanceTest {
 
     public RumpInstanceTest() {
         RequestConfig config = new RequestConfig()
+                .setIgnoreStatusCode((code) -> code >= 400)
                 .setBaseURL("https://jsonplaceholder.typicode.com/")
                 .addRequestInterceptor((mergedURL, connection, config1) -> {
                     if (mergedURL.startsWith("https://www.mydomain.com")) {

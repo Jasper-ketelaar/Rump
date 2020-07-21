@@ -9,8 +9,11 @@ import nl.yasper.rump.request.RequestTransformer;
 import nl.yasper.rump.response.JacksonResponseTransformer;
 import nl.yasper.rump.response.ResponseTransformer;
 
+import java.net.HttpURLConnection;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.function.Consumer;
+import java.util.function.Predicate;
 
 public class RequestConfig {
 
@@ -31,6 +34,8 @@ public class RequestConfig {
     private List<ResponseInterceptor> responseInterceptors = new LinkedList<>();
 
     private RequestMethod method = RequestMethod.GET;
+    private Predicate<Integer> ignoreStatusCode = (val) -> true;
+    private Consumer<HttpURLConnection> connectionConsumer;
 
     public static RequestConfig copyProperties(RequestConfig to, RequestConfig from) {
         return to.setBaseURL(from.getBaseURL())
@@ -41,6 +46,24 @@ public class RequestConfig {
                 .setRequestTransformer(from.getRequestTransformer())
                 .setResponseTransformer(from.getResponseTransformer())
                 .setUseCaches(from.isUsingCaches());
+    }
+
+    public Predicate<Integer> getIgnoreStatusCode() {
+        return ignoreStatusCode;
+    }
+
+    public RequestConfig setIgnoreStatusCode(Predicate<Integer> ignoreStatusCode) {
+        this.ignoreStatusCode = ignoreStatusCode;
+        return this;
+    }
+
+    public RequestConfig withConsumer(Consumer<HttpURLConnection> connectionConsumer) {
+        this.connectionConsumer = connectionConsumer;
+        return this;
+    }
+
+    public Consumer<HttpURLConnection> getConnectionConsumer() {
+        return connectionConsumer;
     }
 
     public RequestConfig merge(RequestConfig... merging) {
@@ -67,16 +90,36 @@ public class RequestConfig {
         return this.baseURL;
     }
 
+    public RequestConfig setBaseURL(String baseURL) {
+        this.baseURL = baseURL;
+        return this;
+    }
+
     public int getTimeout() {
         return this.timeout;
+    }
+
+    public RequestConfig setTimeout(int timeout) {
+        this.timeout = timeout;
+        return this;
     }
 
     public int getReadTimeout() {
         return this.readTimeout;
     }
 
+    public RequestConfig setReadTimeout(int readTimeout) {
+        this.readTimeout = readTimeout;
+        return this;
+    }
+
     public RequestHeaders getRequestHeaders() {
         return this.requestHeaders;
+    }
+
+    public RequestConfig setRequestHeaders(RequestHeaders requestHeaders) {
+        this.requestHeaders = requestHeaders;
+        return this;
     }
 
     public boolean isUsingCaches() {
@@ -87,54 +130,13 @@ public class RequestConfig {
         return this.params;
     }
 
-    public RequestTransformer getRequestTransformer() {
-        return this.requestTransformer;
-    }
-
-    public ResponseTransformer getResponseTransformer() {
-        return this.responseTransformer;
-    }
-
-    public List<RequestInterceptor> getRequestInterceptors() {
-        return this.requestInterceptors;
-    }
-
-    public List<ResponseInterceptor> getResponseInterceptors() {
-        return this.responseInterceptors;
-    }
-
-    public RequestMethod getMethod() {
-        return this.method;
-    }
-
-    public RequestConfig setBaseURL(String baseURL) {
-        this.baseURL = baseURL;
-        return this;
-    }
-
-    public RequestConfig setTimeout(int timeout) {
-        this.timeout = timeout;
-        return this;
-    }
-
-    public RequestConfig setReadTimeout(int readTimeout) {
-        this.readTimeout = readTimeout;
-        return this;
-    }
-
-    public RequestConfig setRequestHeaders(RequestHeaders requestHeaders) {
-        this.requestHeaders = requestHeaders;
-        return this;
-    }
-
-    public RequestConfig setUseCaches(boolean useCaches) {
-        this.useCaches = useCaches;
-        return this;
-    }
-
     public RequestConfig setParams(RequestParams params) {
         this.params = params;
         return this;
+    }
+
+    public RequestTransformer getRequestTransformer() {
+        return this.requestTransformer;
     }
 
     public RequestConfig setRequestTransformer(RequestTransformer requestTransformer) {
@@ -142,9 +144,17 @@ public class RequestConfig {
         return this;
     }
 
+    public ResponseTransformer getResponseTransformer() {
+        return this.responseTransformer;
+    }
+
     public RequestConfig setResponseTransformer(ResponseTransformer responseTransformer) {
         this.responseTransformer = responseTransformer;
         return this;
+    }
+
+    public List<RequestInterceptor> getRequestInterceptors() {
+        return this.requestInterceptors;
     }
 
     public RequestConfig setRequestInterceptors(List<RequestInterceptor> requestInterceptors) {
@@ -152,13 +162,26 @@ public class RequestConfig {
         return this;
     }
 
+    public List<ResponseInterceptor> getResponseInterceptors() {
+        return this.responseInterceptors;
+    }
+
     public RequestConfig setResponseInterceptors(List<ResponseInterceptor> responseInterceptors) {
         this.responseInterceptors = responseInterceptors;
         return this;
     }
 
+    public RequestMethod getMethod() {
+        return this.method;
+    }
+
     public RequestConfig setMethod(RequestMethod method) {
         this.method = method;
+        return this;
+    }
+
+    public RequestConfig setUseCaches(boolean useCaches) {
+        this.useCaches = useCaches;
         return this;
     }
 }

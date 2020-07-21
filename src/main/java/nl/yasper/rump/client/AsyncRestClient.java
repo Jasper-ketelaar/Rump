@@ -1,5 +1,6 @@
 package nl.yasper.rump.client;
 
+import nl.yasper.rump.exception.HttpStatusCodeException;
 import nl.yasper.rump.request.RequestMethod;
 import nl.yasper.rump.response.HttpResponse;
 
@@ -51,7 +52,7 @@ public class AsyncRestClient implements RestClient {
         return CompletableFuture.supplyAsync(() -> {
             try {
                 return backing.request(path, method, requestBody, responseType);
-            } catch (IOException e) {
+            } catch (IOException | HttpStatusCodeException e) {
                 throw new CompletionException(e);
             }
         }, executor);
