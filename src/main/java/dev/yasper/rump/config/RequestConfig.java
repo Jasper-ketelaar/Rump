@@ -1,15 +1,17 @@
 package dev.yasper.rump.config;
 
-import dev.yasper.rump.response.JacksonResponseTransformer;
 import dev.yasper.rump.interceptor.RequestInterceptor;
 import dev.yasper.rump.interceptor.ResponseInterceptor;
 import dev.yasper.rump.request.RequestHeaders;
 import dev.yasper.rump.request.RequestMethod;
 import dev.yasper.rump.request.RequestParams;
 import dev.yasper.rump.request.RequestTransformer;
+import dev.yasper.rump.response.JacksonResponseTransformer;
 import dev.yasper.rump.response.ResponseTransformer;
 
+import java.net.Authenticator;
 import java.net.HttpURLConnection;
+import java.net.Proxy;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.function.Consumer;
@@ -22,20 +24,20 @@ public class RequestConfig {
     private int timeout;
     private int readTimeout;
 
-    private RequestHeaders requestHeaders = new RequestHeaders();
-
     private boolean useCaches;
 
+    private Proxy proxy;
+    private Authenticator authenticator;
+    private RequestHeaders requestHeaders = new RequestHeaders();
     private RequestParams params = new RequestParams();
     private RequestTransformer requestTransformer = (obj, headers) -> obj;
     private ResponseTransformer responseTransformer = new JacksonResponseTransformer();
-
     private List<RequestInterceptor> requestInterceptors = new LinkedList<>();
     private List<ResponseInterceptor> responseInterceptors = new LinkedList<>();
-
     private RequestMethod method = RequestMethod.GET;
     private Predicate<Integer> ignoreStatusCode = (val) -> true;
-    private Consumer<HttpURLConnection> connectionConsumer = (connection -> {});
+    private Consumer<HttpURLConnection> connectionConsumer = (connection -> {
+    });
 
     public static RequestConfig copyProperties(RequestConfig to, RequestConfig from) {
         return to.setBaseURL(from.getBaseURL())
@@ -46,6 +48,15 @@ public class RequestConfig {
                 .setRequestTransformer(from.getRequestTransformer())
                 .setResponseTransformer(from.getResponseTransformer())
                 .setUseCaches(from.isUsingCaches());
+    }
+
+    public Authenticator getAuthenticator() {
+        return authenticator;
+    }
+
+    public RequestConfig setAuthenticator(Authenticator authenticator) {
+        this.authenticator = authenticator;
+        return this;
     }
 
     public Predicate<Integer> getIgnoreStatusCode() {
@@ -74,6 +85,15 @@ public class RequestConfig {
         }
 
         return result;
+    }
+
+    public Proxy getProxy() {
+        return proxy;
+    }
+
+    public RequestConfig setProxy(Proxy proxy) {
+        this.proxy = proxy;
+        return this;
     }
 
     public RequestConfig addRequestInterceptor(RequestInterceptor interceptor) {
