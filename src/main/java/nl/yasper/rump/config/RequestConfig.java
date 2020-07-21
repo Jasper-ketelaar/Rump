@@ -3,6 +3,8 @@ package nl.yasper.rump.config;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
+import nl.yasper.rump.interceptor.RequestInterceptor;
+import nl.yasper.rump.interceptor.ResponseInterceptor;
 import nl.yasper.rump.request.RequestHeaders;
 import nl.yasper.rump.request.RequestMethod;
 import nl.yasper.rump.request.RequestParams;
@@ -11,8 +13,8 @@ import nl.yasper.rump.response.JacksonResponseTransformer;
 import nl.yasper.rump.response.ResponseTransformer;
 
 import java.net.HttpURLConnection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.LinkedList;
+import java.util.List;
 
 @Getter
 @Setter
@@ -31,6 +33,9 @@ public class RequestConfig {
     private RequestParams params = new RequestParams();
     private RequestTransformer requestTransformer = (obj, headers) -> obj;
     private ResponseTransformer responseTransformer = new JacksonResponseTransformer();
+
+    private List<RequestInterceptor> requestInterceptors = new LinkedList<>();
+    private List<ResponseInterceptor> responseInterceptors = new LinkedList<>();
 
     private RequestMethod method = RequestMethod.GET;
 

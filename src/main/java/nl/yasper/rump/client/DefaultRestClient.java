@@ -2,6 +2,8 @@ package nl.yasper.rump.client;
 
 import lombok.RequiredArgsConstructor;
 import nl.yasper.rump.config.RequestConfig;
+import nl.yasper.rump.interceptor.RequestInterceptor;
+import nl.yasper.rump.interceptor.ResponseInterceptor;
 import nl.yasper.rump.request.RequestMethod;
 import nl.yasper.rump.response.HttpResponse;
 import nl.yasper.rump.response.ResponseBody;
@@ -65,6 +67,11 @@ public class DefaultRestClient implements RestClient {
         String urlMergerd = config.getBaseURL() + path + config.getParams().toURLPart();
         URL url = new URL(urlMergerd);
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+        if (!beforeRequest(config, urlMergerd, connection)) {
+            connection.disconnect();
+            return null;
+        }
+
         connection.setRequestMethod(method.toString());
         if (requestBody != null) {
             try (ObjectOutputStream writer = new ObjectOutputStream(connection.getOutputStream())) {
@@ -72,8 +79,34 @@ public class DefaultRestClient implements RestClient {
             }
         }
 
+
         T body = transform(connection.getInputStream(), responseType, config);
-        return new HttpResponse<>(body, connection.getHeaderFields(), connection.getResponseCode());
+        HttpResponse<T> res = new HttpResponse<>(body, connection.getHeaderFields(), connection.getResponseCode(), config);
+        if (!beforeResponse(res)) {
+            return null;
+        }
+
+        return res;
+    }
+
+    private boolean beforeResponse(HttpResponse<?> res) {
+        for (ResponseInterceptor interceptor : config.getResponseInterceptors()) {
+            if (!interceptor.beforeResponse(res)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    private boolean beforeRequest(RequestConfig config, String mergedURL, HttpURLConnection connection) {
+        for (RequestInterceptor interceptor : config.getRequestInterceptors()) {
+            if (!interceptor.beforeRequest(mergedURL, connection, config)) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     private <T> T transform(InputStream input, Class<T> responseType, RequestConfig config) throws IOException {
