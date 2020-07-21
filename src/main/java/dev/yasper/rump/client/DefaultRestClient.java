@@ -1,5 +1,6 @@
 package dev.yasper.rump.client;
 
+import dev.yasper.rump.Rump;
 import dev.yasper.rump.config.RequestConfig;
 import dev.yasper.rump.exception.HttpStatusCodeException;
 import dev.yasper.rump.interceptor.RequestInterceptor;
@@ -26,8 +27,12 @@ public class DefaultRestClient implements RestClient {
     private static final int LAST_SUCCESSFUL_RESPONSE = 299;
     private final RequestConfig config;
 
-    public DefaultRestClient(RequestConfig config) {
+    protected DefaultRestClient(RequestConfig config) {
         this.config = config;
+    }
+
+    public static DefaultRestClient create(RequestConfig config) {
+        return new DefaultRestClient(Rump.DEFAULT_CONFIG.merge(config));
     }
 
     public RequestConfig getConfig() {

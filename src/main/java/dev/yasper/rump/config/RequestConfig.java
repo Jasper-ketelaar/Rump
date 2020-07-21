@@ -6,50 +6,73 @@ import dev.yasper.rump.request.RequestHeaders;
 import dev.yasper.rump.request.RequestMethod;
 import dev.yasper.rump.request.RequestParams;
 import dev.yasper.rump.request.RequestTransformer;
-import dev.yasper.rump.response.JacksonResponseTransformer;
 import dev.yasper.rump.response.ResponseTransformer;
 
+import java.lang.reflect.Field;
 import java.net.Authenticator;
 import java.net.HttpURLConnection;
 import java.net.Proxy;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 public class RequestConfig {
 
-    private String baseURL = "";
+    private String baseURL = null;
+    private Integer timeout = null;
+    private Integer readTimeout = null;
+    private Boolean useCaches = null;
+    private Proxy proxy = null;
+    private Authenticator authenticator = null;
+    private RequestHeaders requestHeaders = null;
+    private RequestParams params = null;
+    private RequestTransformer requestTransformer = null;
+    private ResponseTransformer responseTransformer = null;
+    private List<RequestInterceptor> requestInterceptors = null;
+    private List<ResponseInterceptor> responseInterceptors = null;
+    private RequestMethod method = null;
+    private Predicate<Integer> ignoreStatusCode = null;
+    private Consumer<HttpURLConnection> connectionConsumer = null;
 
-    private int timeout;
-    private int readTimeout;
+    /**
+     * Method to copy properties from a config instance into another config instance. Checks if the values in
+     * from are not null to prevent the config from overwriting all the other values in to.
+     *
+     * @param to   The RequestConfig to copy the properties into
+     * @param from The RequestConfig to copy the properties from
+     */
+    public static void copyProperties(RequestConfig to, RequestConfig from) {
+        for (Field field : from.getClass().getDeclaredFields()) {
+            try {
+                field.setAccessible(true);
+                Object value = field.get(from);
+                if (value != null) {
+                    field.set(to, value);
+                }
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            }
+        }
+    }
 
-    private boolean useCaches;
-
-    private Proxy proxy;
-    private Authenticator authenticator;
-    private RequestHeaders requestHeaders = new RequestHeaders();
-    private RequestParams params = new RequestParams();
-    private RequestTransformer requestTransformer = (obj, headers) -> obj;
-    private ResponseTransformer responseTransformer = new JacksonResponseTransformer();
-    private List<RequestInterceptor> requestInterceptors = new LinkedList<>();
-    private List<ResponseInterceptor> responseInterceptors = new LinkedList<>();
-    private RequestMethod method = RequestMethod.GET;
-    private Predicate<Integer> ignoreStatusCode = (val) -> true;
-    private Consumer<HttpURLConnection> connectionConsumer = (connection -> {
-    });
-
-    public static RequestConfig copyProperties(RequestConfig to, RequestConfig from) {
-        return to.setBaseURL(from.getBaseURL())
-                .setRequestHeaders(RequestHeaders.merge(to.getRequestHeaders(), from.getRequestHeaders()))
-                .setMethod(from.getMethod())
-                .setReadTimeout(from.getReadTimeout())
-                .setTimeout(from.getTimeout())
-                .setRequestTransformer(from.getRequestTransformer())
-                .setResponseTransformer(from.getResponseTransformer())
-                .setUseCaches(from.isUsingCaches())
-                .setProxy(from.getProxy())
-                .setAuthenticator(from.getAuthenticator());
+    @Override
+    public String toString() {
+        return "RequestConfig{" + "baseURL='" + baseURL + '\'' +
+                ", timeout=" + timeout +
+                ", readTimeout=" + readTimeout +
+                ", useCaches=" + useCaches +
+                ", proxy=" + proxy +
+                ", authenticator=" + authenticator +
+                ", requestHeaders=" + requestHeaders +
+                ", params=" + params +
+                ", requestTransformer=" + requestTransformer +
+                ", responseTransformer=" + responseTransformer +
+                ", requestInterceptors=" + requestInterceptors +
+                ", responseInterceptors=" + responseInterceptors +
+                ", method=" + method +
+                ", ignoreStatusCode=" + ignoreStatusCode +
+                ", connectionConsumer=" + connectionConsumer +
+                '}';
     }
 
     public Authenticator getAuthenticator() {
@@ -70,20 +93,20 @@ public class RequestConfig {
         return this;
     }
 
-    public RequestConfig withConsumer(Consumer<HttpURLConnection> connectionConsumer) {
-        this.connectionConsumer = connectionConsumer;
-        return this;
-    }
-
     public Consumer<HttpURLConnection> getConnectionConsumer() {
         return connectionConsumer;
     }
 
+    public RequestConfig setConnectionConsumer(Consumer<HttpURLConnection> connectionConsumer) {
+        this.connectionConsumer = connectionConsumer;
+        return this;
+    }
+
     public RequestConfig merge(RequestConfig... merging) {
         RequestConfig result = new RequestConfig();
-        result = RequestConfig.copyProperties(result, this);
+        RequestConfig.copyProperties(result, this);
         for (RequestConfig merge : merging) {
-            result = RequestConfig.copyProperties(result, merge);
+            RequestConfig.copyProperties(result, merge);
         }
 
         return result;
@@ -144,7 +167,7 @@ public class RequestConfig {
         return this;
     }
 
-    public boolean isUsingCaches() {
+    public Boolean isUsingCaches() {
         return this.useCaches;
     }
 

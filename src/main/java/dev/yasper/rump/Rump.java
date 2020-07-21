@@ -1,13 +1,17 @@
 package dev.yasper.rump;
 
 import dev.yasper.rump.client.AsyncRestClient;
+import dev.yasper.rump.client.DefaultRestClient;
 import dev.yasper.rump.client.RestClient;
 import dev.yasper.rump.config.RequestConfig;
-import dev.yasper.rump.client.DefaultRestClient;
+import dev.yasper.rump.request.RequestHeaders;
 import dev.yasper.rump.request.RequestMethod;
+import dev.yasper.rump.request.RequestParams;
 import dev.yasper.rump.response.HttpResponse;
+import dev.yasper.rump.response.JacksonResponseTransformer;
 
 import java.io.IOException;
+import java.util.LinkedList;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -17,9 +21,23 @@ import java.util.concurrent.Executors;
  */
 public class Rump {
 
-    public static final RequestConfig DEFAULT_CONFIG = new RequestConfig();
+    public static final RequestConfig DEFAULT_CONFIG = new RequestConfig()
+            .setBaseURL("")
+            .setTimeout(7500)
+            .setReadTimeout(7500)
+            .setUseCaches(false)
+            .setRequestHeaders(new RequestHeaders())
+            .setParams(new RequestParams())
+            .setRequestTransformer((obj, headers) -> obj)
+            .setResponseTransformer(new JacksonResponseTransformer())
+            .setRequestInterceptors(new LinkedList<>())
+            .setResponseInterceptors(new LinkedList<>())
+            .setMethod(RequestMethod.GET)
+            .setIgnoreStatusCode((val) -> false)
+            .setConnectionConsumer((connection -> {
+            }));
     private static final ExecutorService DEFAULT_EXECUTOR = Executors.newFixedThreadPool(5);
-    private static final DefaultRestClient DEFAULT_CLIENT = new DefaultRestClient(DEFAULT_CONFIG);
+    private static final DefaultRestClient DEFAULT_CLIENT = DefaultRestClient.create(DEFAULT_CONFIG);
     private static final AsyncRestClient ASYNC_CLIENT = new AsyncRestClient(DEFAULT_CLIENT, DEFAULT_EXECUTOR);
 
     public static <T> T requestForObject(String path, RequestMethod method, Class<T> responseType, RequestConfig... configs) throws IOException {
@@ -57,7 +75,7 @@ public class Rump {
     }
 
     public static RestClient create(RequestConfig config, boolean async) {
-        DefaultRestClient backing = new DefaultRestClient(config);
+        DefaultRestClient backing = DefaultRestClient.create(config);
         if (async) {
             return new AsyncRestClient(backing, DEFAULT_EXECUTOR);
         }
@@ -66,10 +84,10 @@ public class Rump {
     }
 
     public static DefaultRestClient createDefault(RequestConfig config) {
-        return new DefaultRestClient(config);
+        return DefaultRestClient.create(config);
     }
 
     public static AsyncRestClient createAsync(RequestConfig config, ExecutorService executor) {
-        return new AsyncRestClient(new DefaultRestClient(config), executor);
+        return new AsyncRestClient(DefaultRestClient.create(config), executor);
     }
 }
