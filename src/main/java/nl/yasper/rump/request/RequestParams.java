@@ -16,6 +16,10 @@ public class RequestParams {
     private Charset charset = StandardCharsets.UTF_8;
 
     public String toURLPart() {
+        if (requestParams.size() == 0) {
+            return "";
+        }
+
         StringBuilder result = new StringBuilder("?");
         int index = 0;
         Set<String> keySet = requestParams.keySet();

@@ -15,7 +15,13 @@ public class RumpInstanceTest {
 
     public RumpInstanceTest() {
         RequestConfig config = new RequestConfig()
-                .setBaseURL("https://jsonplaceholder.typicode.com/");
+                .setBaseURL("https://jsonplaceholder.typicode.com/")
+                .addRequestInterceptor((mergedURL, connection, config1) -> {
+                    if (mergedURL.startsWith("https://www.mydomain.com")) {
+                        connection.setRequestProperty("Authorization", "Bearer myDomainToken");
+                    }
+                    return true;
+                });
         drs = Rump.createDefault(config);
     }
 

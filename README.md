@@ -103,3 +103,56 @@ try {
     e.printStackTrace();
 }
 ```
+
+## Interceptors
+Interceptors can be used to intercept requests before they are fired and 
+intercept responses before they are returned. For the request this can be used 
+to modify the config or cancel the request completely. For the response these can be used
+to add a default error handler or a default response data transformation.
+
+### Request interceptor
+A request interceptor could look like this:
+```java
+RequestConfig config = new RequestConfig()
+        .addRequestInterceptor((mergedURL, connection, config1) -> {
+            if (mergedURL.startsWith("https://www.mydomain.com")) {
+                connection.setRequestProperty("Authorization", "Bearer myDomainToken");
+            }
+            return true;
+        });
+DefaultRestClient drs = Rump.createDefault(config);
+```
+
+Here we check if the domain we are sending a request to matches `https://www.mydomain.com` and if 
+so we will append our authorization token for this domain to the header of that specific request.
+Please note that Rump applies the config values before calling the request interceptor
+so modifying the config values will have no effect on the request. Unless you added
+a response specific config value such as adding a response interceptor at this stage. 
+
+### Response interceptor
+A response interceptor could look like this:
+```java
+RequestConfig config = new RequestConfig()
+        .setBaseURL("https://jsonplaceholder.typicode.com/")
+        .addResponseInterceptor(res -> {
+            Object body = res.getBody();
+            if (body instanceof Post) {
+                Post post = (Post) body;
+                post.setTitle(String.format("[INTERCEPTED] %s", post.getTitle()));
+            }
+            return true;
+        });
+
+DefaultRestClient drs = Rump.createDefault(config);
+```
+
+Now whenever the response body is of type Post the interceptor will activate and 
+modify the post's title appending [INTERCEPTED]. A sample request could be like this:
+```java
+HttpResponse<Post> res = drs.get("posts/1", Post.class);
+System.out.println(res.getBody().getTitle());
+```
+Output:
+```
+[INTERCEPTED] sunt aut facere repellat provident occaecati excepturi optio reprehenderit
+```

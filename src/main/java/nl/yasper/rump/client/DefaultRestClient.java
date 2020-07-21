@@ -1,6 +1,5 @@
 package nl.yasper.rump.client;
 
-import lombok.RequiredArgsConstructor;
 import nl.yasper.rump.config.RequestConfig;
 import nl.yasper.rump.interceptor.RequestInterceptor;
 import nl.yasper.rump.interceptor.ResponseInterceptor;
@@ -17,14 +16,20 @@ import java.net.URL;
 import java.util.Arrays;
 import java.util.List;
 
-@RequiredArgsConstructor
 public class DefaultRestClient implements RestClient {
 
     private static final List<Class<?>> PRIMITIVE_CLASSES = Arrays.asList(
-        String.class, Double.class, Integer.class
+            String.class, Double.class, Integer.class
     );
-
     private final RequestConfig config;
+
+    public DefaultRestClient(RequestConfig config) {
+        this.config = config;
+    }
+
+    public RequestConfig getConfig() {
+        return config;
+    }
 
     public <T> T getForObject(String path, Class<T> responseType,
                               RequestConfig... merging) throws IOException {
@@ -64,10 +69,11 @@ public class DefaultRestClient implements RestClient {
     public <T> HttpResponse<T> request(String path, RequestMethod method, Object requestBody, Class<T> responseType,
                                        RequestConfig... merging) throws IOException {
         RequestConfig config = this.config.merge(merging);
-        String urlMergerd = config.getBaseURL() + path + config.getParams().toURLPart();
-        URL url = new URL(urlMergerd);
+        String urlMerged = config.getBaseURL() + path + config.getParams().toURLPart();
+        URL url = new URL(urlMerged);
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-        if (!beforeRequest(config, urlMergerd, connection)) {
+        applyConfig(connection, config);
+        if (!beforeRequest(config, urlMerged, connection)) {
             connection.disconnect();
             return null;
         }
@@ -81,7 +87,10 @@ public class DefaultRestClient implements RestClient {
 
 
         T body = transform(connection.getInputStream(), responseType, config);
-        HttpResponse<T> res = new HttpResponse<>(body, connection.getHeaderFields(), connection.getResponseCode(), config);
+        HttpResponse<T> res = new HttpResponse<>(
+                body, connection.getHeaderFields(),
+                connection.getResponseCode(), config, urlMerged
+        );
         if (!beforeResponse(res)) {
             return null;
         }
@@ -107,6 +116,16 @@ public class DefaultRestClient implements RestClient {
         }
 
         return true;
+    }
+
+    private void applyConfig(HttpURLConnection connection, RequestConfig config) {
+        connection.setConnectTimeout(config.getTimeout());
+        connection.setReadTimeout(config.getReadTimeout());
+        for (String key : config.getRequestHeaders().headerKeys()) {
+            connection.setRequestProperty(key, config.getRequestHeaders().getHeader(key));
+        }
+
+        connection.setUseCaches(config.isUseCaches());
     }
 
     private <T> T transform(InputStream input, Class<T> responseType, RequestConfig config) throws IOException {

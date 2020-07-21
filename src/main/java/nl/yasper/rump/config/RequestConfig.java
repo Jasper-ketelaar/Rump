@@ -50,16 +50,6 @@ public class RequestConfig {
                 .setUseCaches(from.isUseCaches());
     }
 
-    public void applyConfig(HttpURLConnection connection) {
-        connection.setConnectTimeout(timeout);
-        connection.setReadTimeout(readTimeout);
-        for (String key : requestHeaders.headerKeys()) {
-            connection.setRequestProperty(key, requestHeaders.getHeader(key));
-        }
-
-        connection.setUseCaches(useCaches);
-    }
-
     public RequestConfig merge(RequestConfig... merging) {
         RequestConfig result = new RequestConfig();
         result = RequestConfig.copyProperties(result, this);
@@ -68,6 +58,16 @@ public class RequestConfig {
         }
 
         return result;
+    }
+
+    public RequestConfig addRequestInterceptor(RequestInterceptor interceptor) {
+        this.requestInterceptors.add(interceptor);
+        return this;
+    }
+
+    public RequestConfig addResponseInterceptor(ResponseInterceptor interceptor) {
+        this.responseInterceptors.add(interceptor);
+        return this;
     }
 
 }

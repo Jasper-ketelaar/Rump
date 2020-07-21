@@ -7,16 +7,23 @@ import java.util.Map;
 
 public class HttpResponse<T> {
 
-    private final T body;
+    private T body;
     private final Map<String, List<String>> headerFields;
     private final int responseCode;
     private final RequestConfig requestConfig;
+    private final String url;
 
-    public HttpResponse(T body, Map<String, List<String>> headerFields, int responseCode, RequestConfig requestConfig) {
+    public HttpResponse(T body, Map<String, List<String>> headerFields, int responseCode, RequestConfig requestConfig,
+                        String url) {
         this.body = body;
         this.headerFields = headerFields;
         this.responseCode = responseCode;
         this.requestConfig = requestConfig;
+        this.url = url;
+    }
+
+    public String getUrl() {
+        return url;
     }
 
     public RequestConfig getRequestConfig() {
@@ -25,6 +32,10 @@ public class HttpResponse<T> {
 
     public T getBody() {
         return this.body;
+    }
+
+    public void setBody(T to) {
+        this.body = to;
     }
 
     public Map<String, List<String>> getHeaderFields() {
