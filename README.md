@@ -1,4 +1,5 @@
 # Rump
+[![Actions Status](https://github.com/Jasper-ketelaar/Rump/workflows/Verify/badge.svg)](https://github.com/Jasper-ketelaar/Rump/actions)
 
 Rump is a REST client for Java that attempts to resemble Axios from JavaScript. 
 
