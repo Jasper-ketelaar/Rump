@@ -11,12 +11,10 @@ so I decided to make a version of that for Java that would fit my needs.
 - Create rest requests asynchronously
 - Custom response mapper support by modifying request config (By default Rump uses Jackson)
 - Request transformation before sending it out
-
-## TODO
-- Interceptors
-- Custom error handling support
-- Canceling requests
-- Request params
+- Intercept requests/responses to modify them
+- Canceling of requests by using a request interceptor
+- Canceling of responses by using a response interceptor
+- Creation of instances is fast and easy due to chaining of calls, and the ability to have multiple configs per request
 
 ## Basic Usage
 There's three different ways of making REST api calls with Rump:
