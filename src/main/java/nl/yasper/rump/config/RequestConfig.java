@@ -35,7 +35,7 @@ public class RequestConfig {
 
     private RequestMethod method = RequestMethod.GET;
     private Predicate<Integer> ignoreStatusCode = (val) -> true;
-    private Consumer<HttpURLConnection> connectionConsumer;
+    private Consumer<HttpURLConnection> connectionConsumer = (connection -> {});
 
     public static RequestConfig copyProperties(RequestConfig to, RequestConfig from) {
         return to.setBaseURL(from.getBaseURL())

@@ -8,6 +8,14 @@
     <artifactId>rump</artifactId>
     <version>1.0.0-SNAPSHOT</version>
 
+    <licenses>
+        <license>
+            <name>gpl_v3</name>
+            <url>https://www.gnu.org/licenses/gpl-3.0.en.html</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+
     <properties>
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
