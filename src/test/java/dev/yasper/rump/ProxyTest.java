@@ -19,7 +19,8 @@ public class ProxyTest {
     public void init() {
         SocketAddress address = new InetSocketAddress("45.225.93.66", 999);
         RequestConfig withProxy = new RequestConfig()
-                .setProxy(new Proxy(Proxy.Type.HTTP, address))  ;
+                .setProxy(new Proxy(Proxy.Type.HTTP, address))
+                .setTimeout(25000);
         this.withProxy = Rump.createDefault(withProxy);
     }
 
