@@ -1,4 +1,6 @@
 # Rump
+Rump is a REST client for Java that attempts to resemble Axios from JavaScript. 
+
 [![Actions Status](https://github.com/Jasper-ketelaar/Rump/workflows/Verify/badge.svg)](https://github.com/Jasper-ketelaar/Rump/actions)
 
 ## Install with Maven
@@ -9,8 +11,6 @@
   <version>1.0.0-SNAPSHOT</version>
 </dependency>
 ```
-
-Rump is a REST client for Java that attempts to resemble Axios from JavaScript. 
 
 ## Why
 I was working on a project and none of the currently available REST clients for Java seemed to match my needs. I am a pretty big fan of Axios for JavaScript
