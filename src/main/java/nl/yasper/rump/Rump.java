@@ -14,8 +14,9 @@ import java.util.concurrent.Executors;
 
 public class Rump {
 
+    public static final RequestConfig DEFAULT_CONFIG = new RequestConfig();
     private static final ExecutorService DEFAULT_EXECUTOR = Executors.newFixedThreadPool(5);
-    private static final DefaultRestClient DEFAULT_CLIENT = new DefaultRestClient(new RequestConfig());
+    private static final DefaultRestClient DEFAULT_CLIENT = new DefaultRestClient(DEFAULT_CONFIG);
     private static final AsyncRestClient ASYNC_CLIENT = new AsyncRestClient(DEFAULT_CLIENT, DEFAULT_EXECUTOR);
 
     public static <T> T requestForObject(String path, RequestMethod method, Class<T> responseType, RequestConfig... configs) throws IOException {

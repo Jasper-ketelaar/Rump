@@ -125,7 +125,7 @@ public class DefaultRestClient implements RestClient {
             connection.setRequestProperty(key, config.getRequestHeaders().getHeader(key));
         }
 
-        connection.setUseCaches(config.isUseCaches());
+        connection.setUseCaches(config.isUsingCaches());
     }
 
     private <T> T transform(InputStream input, Class<T> responseType, RequestConfig config) throws IOException {

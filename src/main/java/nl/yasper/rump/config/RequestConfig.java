@@ -1,8 +1,5 @@
 package nl.yasper.rump.config;
 
-import lombok.Getter;
-import lombok.Setter;
-import lombok.experimental.Accessors;
 import nl.yasper.rump.interceptor.RequestInterceptor;
 import nl.yasper.rump.interceptor.ResponseInterceptor;
 import nl.yasper.rump.request.RequestHeaders;
@@ -12,13 +9,9 @@ import nl.yasper.rump.request.RequestTransformer;
 import nl.yasper.rump.response.JacksonResponseTransformer;
 import nl.yasper.rump.response.ResponseTransformer;
 
-import java.net.HttpURLConnection;
 import java.util.LinkedList;
 import java.util.List;
 
-@Getter
-@Setter
-@Accessors(chain = true)
 public class RequestConfig {
 
     private String baseURL = "";
@@ -47,7 +40,7 @@ public class RequestConfig {
                 .setTimeout(from.getTimeout())
                 .setRequestTransformer(from.getRequestTransformer())
                 .setResponseTransformer(from.getResponseTransformer())
-                .setUseCaches(from.isUseCaches());
+                .setUseCaches(from.isUsingCaches());
     }
 
     public RequestConfig merge(RequestConfig... merging) {
@@ -70,4 +63,102 @@ public class RequestConfig {
         return this;
     }
 
+    public String getBaseURL() {
+        return this.baseURL;
+    }
+
+    public int getTimeout() {
+        return this.timeout;
+    }
+
+    public int getReadTimeout() {
+        return this.readTimeout;
+    }
+
+    public RequestHeaders getRequestHeaders() {
+        return this.requestHeaders;
+    }
+
+    public boolean isUsingCaches() {
+        return this.useCaches;
+    }
+
+    public RequestParams getParams() {
+        return this.params;
+    }
+
+    public RequestTransformer getRequestTransformer() {
+        return this.requestTransformer;
+    }
+
+    public ResponseTransformer getResponseTransformer() {
+        return this.responseTransformer;
+    }
+
+    public List<RequestInterceptor> getRequestInterceptors() {
+        return this.requestInterceptors;
+    }
+
+    public List<ResponseInterceptor> getResponseInterceptors() {
+        return this.responseInterceptors;
+    }
+
+    public RequestMethod getMethod() {
+        return this.method;
+    }
+
+    public RequestConfig setBaseURL(String baseURL) {
+        this.baseURL = baseURL;
+        return this;
+    }
+
+    public RequestConfig setTimeout(int timeout) {
+        this.timeout = timeout;
+        return this;
+    }
+
+    public RequestConfig setReadTimeout(int readTimeout) {
+        this.readTimeout = readTimeout;
+        return this;
+    }
+
+    public RequestConfig setRequestHeaders(RequestHeaders requestHeaders) {
+        this.requestHeaders = requestHeaders;
+        return this;
+    }
+
+    public RequestConfig setUseCaches(boolean useCaches) {
+        this.useCaches = useCaches;
+        return this;
+    }
+
+    public RequestConfig setParams(RequestParams params) {
+        this.params = params;
+        return this;
+    }
+
+    public RequestConfig setRequestTransformer(RequestTransformer requestTransformer) {
+        this.requestTransformer = requestTransformer;
+        return this;
+    }
+
+    public RequestConfig setResponseTransformer(ResponseTransformer responseTransformer) {
+        this.responseTransformer = responseTransformer;
+        return this;
+    }
+
+    public RequestConfig setRequestInterceptors(List<RequestInterceptor> requestInterceptors) {
+        this.requestInterceptors = requestInterceptors;
+        return this;
+    }
+
+    public RequestConfig setResponseInterceptors(List<ResponseInterceptor> responseInterceptors) {
+        this.responseInterceptors = responseInterceptors;
+        return this;
+    }
+
+    public RequestConfig setMethod(RequestMethod method) {
+        this.method = method;
+        return this;
+    }
 }
