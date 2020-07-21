@@ -8,7 +8,7 @@ Rump is a REST client for Java that attempts to resemble Axios from JavaScript.
 <dependency>
   <groupId>dev.yasper</groupId>
   <artifactId>rump</artifactId>
-  <version>1.0.0-SNAPSHOT</version>
+  <version>1.0.0</version>
 </dependency>
 ```
 
