@@ -17,7 +17,7 @@ public class ProxyTest {
 
     @Before
     public void init() {
-        SocketAddress address = new InetSocketAddress("45.225.93.66", 999);
+        SocketAddress address = new InetSocketAddress("104.168.211.27", 1080);
         RequestConfig withProxy = new RequestConfig()
                 .setProxy(new Proxy(Proxy.Type.HTTP, address))
                 .setTimeout(25000);
