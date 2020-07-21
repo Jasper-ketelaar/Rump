@@ -55,7 +55,6 @@ public class RumpTest {
         try {
             // Params from default config are now overridden and headers from default config are now merged together
             HttpResponse<Post> res = Rump.get("https://jsonplaceholder.typicode.com/posts/1", Post.class, params, headers);
-            System.out.println(res.getRequestConfig().getRequestHeaders());
             Post match = new Post()
                     .setId(1)
                     .setUserId(1)
