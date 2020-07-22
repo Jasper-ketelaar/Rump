@@ -1,3 +1,21 @@
+/**
+ * Rump is a REST client for Java that allows for easy configuration and default values.
+ *
+ * Copyright (C) 2020 Jasper Ketelaar
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
 package dev.yasper.rump.client;
 
 import dev.yasper.rump.Headers;
@@ -8,10 +26,9 @@ import dev.yasper.rump.interceptor.RequestInterceptor;
 import dev.yasper.rump.interceptor.ResponseInterceptor;
 import dev.yasper.rump.request.RequestMethod;
 import dev.yasper.rump.response.HttpResponse;
-import dev.yasper.rump.response.ResponseBody;
+import dev.yasper.rump.response.PrimitiveBody;
 import dev.yasper.rump.response.ResponseTransformer;
 
-import javax.lang.model.type.NullType;
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.ProtocolException;
@@ -23,7 +40,8 @@ import java.util.List;
 public class DefaultRestClient implements RestClient {
 
     private static final List<Class<?>> PRIMITIVE_CLASSES = Arrays.asList(
-            String.class, Double.class, Integer.class
+            String.class, Double.class, Integer.class, Float.class,
+            Short.class, Byte.class, Boolean.class, Character.class
     );
     private static final int LAST_SUCCESSFUL_RESPONSE = 299;
     private final RequestConfig config;
@@ -118,7 +136,7 @@ public class DefaultRestClient implements RestClient {
         Headers responseHeaders = new Headers(connection.getHeaderFields());
         if (connection.getResponseCode() > LAST_SUCCESSFUL_RESPONSE
                 && !config.getIgnoreStatusCode().test(connection.getResponseCode())) {
-            ResponseBody body = new ResponseBody(connection.getErrorStream());
+            PrimitiveBody body = new PrimitiveBody(connection.getErrorStream());
             HttpResponse<String> errorResponse = new HttpResponse<>(
                     body.getAsString(), responseHeaders,
                     connection.getResponseCode(), connection.getResponseMessage(),
@@ -203,9 +221,9 @@ public class DefaultRestClient implements RestClient {
             return null;
         }
 
-        if (responseType == ResponseBody.class || PRIMITIVE_CLASSES.contains(responseType)) {
-            ResponseBody body = new ResponseBody(input);
-            if (responseType == ResponseBody.class) {
+        if (responseType == PrimitiveBody.class || PRIMITIVE_CLASSES.contains(responseType)) {
+            PrimitiveBody body = new PrimitiveBody(input);
+            if (responseType == PrimitiveBody.class) {
                 return responseType.cast(body);
             } else {
                 return body.getAs(responseType);

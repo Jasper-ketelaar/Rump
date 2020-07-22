@@ -1,3 +1,21 @@
+/**
+ * Rump is a REST client for Java that allows for easy configuration and default values.
+ *
+ * Copyright (C) 2020 Jasper Ketelaar
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
 package dev.yasper.rump;
 
 import dev.yasper.rump.client.AsyncRestClient;
@@ -19,9 +37,14 @@ import java.util.concurrent.Executors;
 
 /**
  * Main entry point for Rump.
+ * See {@link DefaultRestClient} or {@link AsyncRestClient} for better documentation on the methods.
+ * This class just encapsulates two instances of those clients for its methods.
  */
 public class Rump {
 
+    /**
+     * Default config values for Rump
+     */
     public static final RequestConfig DEFAULT_CONFIG = new RequestConfig()
             .setBaseURL("")
             .setTimeout(7500)
@@ -132,6 +155,13 @@ public class Rump {
         return ASYNC_CLIENT.request(path, method, requestBody, responseType);
     }
 
+    /**
+     * Create a {@link RestClient} instance.
+     *
+     * @param config The config from which to construct the client
+     * @param async  Whether or not the returned client should be for async requests
+     * @return The constructed {@link RestClient}
+     */
     public static RestClient create(RequestConfig config, boolean async) {
         DefaultRestClient backing = DefaultRestClient.create(config);
         if (async) {
@@ -141,10 +171,23 @@ public class Rump {
         return backing;
     }
 
+    /**
+     * Creates a {@link DefaultRestClient} instance
+     *
+     * @param config The config from which to construct the client
+     * @return The constructed {@link DefaultRestClient}
+     */
     public static DefaultRestClient createDefault(RequestConfig config) {
         return DefaultRestClient.create(config);
     }
 
+    /**
+     * Creates an {@link AsyncRestClient} instance
+     *
+     * @param config   The config from which to construct the client
+     * @param executor The executor to construct this instance from. See {@link Executors} to construct an executor.
+     * @return The constructed {@link AsyncRestClient}
+     */
     public static AsyncRestClient createAsync(RequestConfig config, ExecutorService executor) {
         return new AsyncRestClient(DefaultRestClient.create(config), executor);
     }
