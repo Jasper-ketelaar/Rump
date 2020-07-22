@@ -50,4 +50,10 @@ public class RumpInstanceTest {
             e.printStackTrace();
         }
     }
+
+    @Test
+    public void testHead() throws IOException {
+        HttpResponse<?> post = drs.head("posts/1");
+        Assert.assertEquals(post.getResponseHeaders().getServer(), "cloudflare");
+    }
 }

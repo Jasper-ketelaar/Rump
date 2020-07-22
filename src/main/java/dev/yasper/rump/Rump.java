@@ -50,6 +50,18 @@ public class Rump {
         return DEFAULT_CLIENT.getForObject(path, responseType, configs);
     }
 
+    public static <T> T postForObject(String path, Object requestBody, Class<T> responseType, RequestConfig... configs) throws IOException {
+        return DEFAULT_CLIENT.postForObject(path, requestBody, responseType, configs);
+    }
+
+    public static <T> T putForObject(String path, Object requestBody, Class<T> responseType, RequestConfig... configs) throws IOException {
+        return DEFAULT_CLIENT.putForObject(path, requestBody, responseType, configs);
+    }
+
+    public static <T> T deleteForObject(String path, Class<T> responseType, RequestConfig... configs) throws IOException {
+        return DEFAULT_CLIENT.deleteForObject(path, responseType, configs);
+    }
+
     public static <T> HttpResponse<T> get(String path, Class<T> responseType, RequestConfig... configs) throws IOException {
         return DEFAULT_CLIENT.get(path, responseType, configs);
     }
@@ -60,6 +72,14 @@ public class Rump {
 
     public static <T> HttpResponse<T> put(String path, Object requestBody, Class<T> responseType, RequestConfig... configs) throws IOException {
         return DEFAULT_CLIENT.put(path, requestBody, responseType, configs);
+    }
+
+    public static <T> HttpResponse<T> delete(String path, Class<T> responseType, RequestConfig... configs) throws IOException {
+        return DEFAULT_CLIENT.delete(path, responseType, configs);
+    }
+
+    public static HttpResponse<?> head(String path, RequestConfig... configs) throws IOException {
+        return DEFAULT_CLIENT.head(path, configs);
     }
 
     public static <T> HttpResponse<T> request(String path, Object requestBody,

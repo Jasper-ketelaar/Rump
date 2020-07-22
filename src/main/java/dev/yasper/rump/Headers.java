@@ -4,10 +4,7 @@ import dev.yasper.rump.config.RequestConfig;
 
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Supplier;
 
 public class Headers {
@@ -16,8 +13,7 @@ public class Headers {
 
     public Headers(Map<String, List<String>> headerFields) {
         for (String key : headerFields.keySet()) {
-            headers.put(key, new SimpleHeader(key, headerFields.get(key)
-                    .stream().reduce("", (str1, str2) -> str1 + ", " + str2)));
+            headers.put(key, new SimpleHeader(key, String.join(", ", headerFields.get(key))));
         }
     }
 
@@ -507,6 +503,7 @@ public class Headers {
 
     @Override
     public String toString() {
+        Collection<Header> headers = this.headers.values();
         return "RequestHeaders{" + "headers=" + headers +
                 '}';
     }
@@ -575,6 +572,11 @@ public class Headers {
         @Override
         public String getValue() {
             return value;
+        }
+
+        @Override
+        public String toString() {
+           return String.format("%s=%s", getName(), getValue());
         }
     }
 }
