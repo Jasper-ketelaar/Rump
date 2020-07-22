@@ -2,14 +2,14 @@
 Rump is a REST client for Java that attempts to resemble Axios from JavaScript. 
 
 [![Actions Status](https://github.com/Jasper-ketelaar/Rump/workflows/Verify/badge.svg)](https://github.com/Jasper-ketelaar/Rump/actions)
-[![Maven Status](https://maven-badges.herokuapp.com/maven-central/dev.yasper/rump/badge.svg)](https://search.maven.org/artifact/dev.yasper/rump/1.0.5/jar)
+[![Maven Status](https://maven-badges.herokuapp.com/maven-central/dev.yasper/rump/badge.svg)](https://search.maven.org/artifact/dev.yasper/rump/1.0.6/jar)
 [![Javadocs](http://www.javadoc.io/badge/dev.yasper/rump.svg)](http://www.javadoc.io/doc/dev.yasper/rump)
 ## Install with Maven
 ```xml
 <dependency>
   <groupId>dev.yasper</groupId>
   <artifactId>rump</artifactId>
-  <version>1.0.5</version>
+  <version>1.0.6</version>
 </dependency>
 ```
 
