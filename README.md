@@ -198,10 +198,14 @@ These are thrown as completion errors within the async functionality of Rump. Yo
 what status codes are considered as errors by adjusting `ignoreStatusCode` in `RequestConfig`. For example:
 ```java
 RequestConfig config = new RequestConfig()
-        .setIgnoreStatusCode((code) -> code >= 400);
+        .setIgnoreStatusCode((code) -> code < 400);
 ```
 Config now doesn't throw an error if the status code is between 300 and 399.
 
 The `HttpStatusCodeException` contains a `HttpResponse<String>` where the error body is of string value.
 You can therefore easily inspect values of the error response the same way you would
 check values of a successful response.
+
+`RequestConfig` also has a value `exceptionHandler` that can be modified to change the default
+exception behaviour. `DefaultExceptionHandler` is the default exception handler that simply
+thros the `HttpStatusCodeException` that it is passed.
