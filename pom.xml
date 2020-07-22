@@ -10,7 +10,7 @@
 
     <groupId>dev.yasper</groupId>
     <artifactId>rump</artifactId>
-    <version>1.0.1-SNAPSHOT</version>
+    <version>1.0.4</version>
 
     <distributionManagement>
         <snapshotRepository>
@@ -134,10 +134,4 @@
             </plugin>
         </plugins>
     </build>
-
-  <scm>
-    <connection>scm:svn:http://svn.sonatype.org/spice/tags/v1.0.0</connection>
-    <developerConnection>scm:svn:https://svn.sonatype.org/spice/tags/v1.0.0</developerConnection>
-    <url>http://svn.sonatype.org/spice/tags/v1.0.0</url>
-  </scm>
 </project>

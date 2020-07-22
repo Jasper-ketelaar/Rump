@@ -1,5 +1,6 @@
 package dev.yasper.rump.response;
 
+import dev.yasper.rump.Headers;
 import dev.yasper.rump.config.RequestConfig;
 
 import java.util.List;
@@ -7,17 +8,17 @@ import java.util.Map;
 
 public class HttpResponse<T> {
 
-    private final Map<String, List<String>> headerFields;
+    private final Headers responseHeaders;
     private final int responseCode;
     private final String responseMessage;
     private final RequestConfig requestConfig;
     private final String url;
     private T body;
 
-    public HttpResponse(T body, Map<String, List<String>> headerFields, int responseCode, String responseMessage, RequestConfig requestConfig,
+    public HttpResponse(T body, Headers responseHeaders, int responseCode, String responseMessage, RequestConfig requestConfig,
                         String url) {
         this.body = body;
-        this.headerFields = headerFields;
+        this.responseHeaders = responseHeaders;
         this.responseCode = responseCode;
         this.requestConfig = requestConfig;
         this.url = url;
@@ -44,8 +45,8 @@ public class HttpResponse<T> {
         this.body = to;
     }
 
-    public Map<String, List<String>> getHeaderFields() {
-        return this.headerFields;
+    public Headers getResponseHeaders() {
+        return this.responseHeaders;
     }
 
     public int getResponseCode() {

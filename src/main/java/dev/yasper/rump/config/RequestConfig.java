@@ -3,7 +3,7 @@ package dev.yasper.rump.config;
 import dev.yasper.rump.exception.ExceptionHandler;
 import dev.yasper.rump.interceptor.RequestInterceptor;
 import dev.yasper.rump.interceptor.ResponseInterceptor;
-import dev.yasper.rump.request.RequestHeaders;
+import dev.yasper.rump.Headers;
 import dev.yasper.rump.request.RequestMethod;
 import dev.yasper.rump.request.RequestParams;
 import dev.yasper.rump.request.RequestTransformer;
@@ -26,7 +26,7 @@ public class RequestConfig {
     private Boolean useCaches = null;
     private Proxy proxy = null;
     private Authenticator authenticator = null;
-    private RequestHeaders requestHeaders = null;
+    private Headers requestHeaders = null;
     private RequestParams params = null;
     private RequestTransformer requestTransformer = null;
     private ResponseTransformer responseTransformer = null;
@@ -176,11 +176,11 @@ public class RequestConfig {
         return this;
     }
 
-    public RequestHeaders getRequestHeaders() {
+    public Headers getRequestHeaders() {
         return this.requestHeaders;
     }
 
-    public RequestConfig setRequestHeaders(RequestHeaders requestHeaders) {
+    public RequestConfig setRequestHeaders(Headers requestHeaders) {
         this.requestHeaders = requestHeaders;
         return this;
     }

@@ -1,8 +1,8 @@
 package dev.yasper.rump;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import dev.yasper.rump.config.RequestConfig;
 import dev.yasper.rump.model.Post;
-import dev.yasper.rump.request.RequestHeaders;
 import dev.yasper.rump.request.RequestParams;
 import dev.yasper.rump.response.HttpResponse;
 import org.junit.Assert;
@@ -46,9 +46,9 @@ public class RumpTest {
                 .add("test", 1)
                 .toConfig();
 
-        RequestConfig headers = new RequestHeaders()
+        RequestConfig headers = new Headers()
                 .setAuthentication("Bearer token")
-                .setContentType(RequestHeaders.ContentType.JSON)
+                .setContentType(Headers.ContentType.APPLICATION_JSON)
                 .setUserAgent("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.116 Safari/537.36")
                 .toConfig();
 
@@ -66,6 +66,15 @@ public class RumpTest {
             e.printStackTrace();
         }
 
+    }
+
+    @Test
+    public void testPost() throws IOException {
+        Post match = new Post()
+                .setTitle("sunt aut facere repellat provident occaecati excepturi optio reprehenderit")
+                .setBody("quia et suscipit\nsuscipit recusandae consequuntur expedita et cum\nreprehenderit molestiae ut ut quas totam\nnostrum rerum est autem sunt rem eveniet architecto");
+        HttpResponse<JsonNode> postRes = Rump.post("https://jsonplaceholder.typicode.com/posts/", match, JsonNode.class);
+        Assert.assertEquals(postRes.getBody().get("id").asInt(), 101);
     }
 
 }

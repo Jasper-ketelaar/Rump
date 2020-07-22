@@ -1,5 +1,6 @@
 package dev.yasper.rump.client;
 
+import dev.yasper.rump.Headers;
 import dev.yasper.rump.Rump;
 import dev.yasper.rump.config.RequestConfig;
 import dev.yasper.rump.exception.HttpStatusCodeException;
@@ -10,10 +11,9 @@ import dev.yasper.rump.response.HttpResponse;
 import dev.yasper.rump.response.ResponseBody;
 import dev.yasper.rump.response.ResponseTransformer;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.ObjectOutputStream;
+import java.io.*;
 import java.net.HttpURLConnection;
+import java.net.ProtocolException;
 import java.net.Proxy;
 import java.net.URL;
 import java.util.Arrays;
@@ -74,9 +74,14 @@ public class DefaultRestClient implements RestClient {
         return request(path, RequestMethod.GET, null, responseType, merging);
     }
 
-    public <T> HttpResponse<T> request(String path, RequestMethod method, Object requestBody, Class<T> responseType,
-                                       RequestConfig... merging) throws IOException {
-        RequestConfig config = this.config.merge(merging);
+
+    public <T> HttpResponse<T> request(String path, RequestMethod method, Object requestBody,
+                                       Class<T> responseType, RequestConfig... merging) throws IOException {
+        return request(path, requestBody, responseType, this.config.merge(method.toConfig()).merge(merging));
+    }
+
+    private <T> HttpResponse<T> request(String path, Object requestBody, Class<T> responseType,
+                                        RequestConfig config) throws IOException {
         String urlMerged = config.getBaseURL() + path + config.getParams().toURLPart();
         URL url = new URL(urlMerged);
 
@@ -87,18 +92,16 @@ public class DefaultRestClient implements RestClient {
             return null;
         }
 
-        connection.setRequestMethod(method.toString());
         if (requestBody != null) {
-            try (ObjectOutputStream writer = new ObjectOutputStream(connection.getOutputStream())) {
-                writer.writeObject(requestBody);
-            }
+            writeToConnection(connection, requestBody, config);
         }
 
+        Headers responseHeaders = new Headers(connection.getHeaderFields());
         if (connection.getResponseCode() > LAST_SUCCESSFUL_RESPONSE
                 && !config.getIgnoreStatusCode().test(connection.getResponseCode())) {
-            ResponseBody body = new ResponseBody(connection.getInputStream());
+            ResponseBody body = new ResponseBody(connection.getErrorStream());
             HttpResponse<String> errorResponse = new HttpResponse<>(
-                    body.getAsString(), connection.getHeaderFields(),
+                    body.getAsString(), responseHeaders,
                     connection.getResponseCode(), connection.getResponseMessage(),
                     config, urlMerged
             );
@@ -109,7 +112,7 @@ public class DefaultRestClient implements RestClient {
 
         T body = transform(connection.getInputStream(), responseType, config);
         HttpResponse<T> res = new HttpResponse<>(
-                body, connection.getHeaderFields(),
+                body, responseHeaders,
                 connection.getResponseCode(), connection.getResponseMessage(),
                 config, urlMerged
         );
@@ -118,6 +121,21 @@ public class DefaultRestClient implements RestClient {
         }
 
         return res;
+    }
+
+    private void writeToConnection(HttpURLConnection connection, Object requestBody, RequestConfig config) throws IOException {
+        String mapped = config.getRequestTransformer().transform(requestBody, config.getRequestHeaders())
+                .toString();
+        try (Writer out = new OutputStreamWriter(connection.getOutputStream())) {
+            BufferedWriter writer = new BufferedWriter(out);
+            writer.write(mapped);
+        }
+    }
+
+    public <T> HttpResponse<T> request(String path, Object requestBody, Class<T> responseType,
+                                       RequestConfig... merging) throws IOException {
+        RequestConfig config = this.config.merge(merging);
+        return request(path, requestBody, responseType, config);
     }
 
     private HttpURLConnection openWithProxyIfPresent(URL url, Proxy proxy) throws IOException {
@@ -148,14 +166,19 @@ public class DefaultRestClient implements RestClient {
         return true;
     }
 
-    private void applyConfig(HttpURLConnection connection, RequestConfig config) {
+    private void applyConfig(HttpURLConnection connection, RequestConfig config) throws ProtocolException {
         connection.setConnectTimeout(config.getTimeout());
         connection.setReadTimeout(config.getReadTimeout());
+        connection.setRequestMethod(config.getMethod().toString());
+        if (config.getMethod() == RequestMethod.POST || config.getMethod() == RequestMethod.PUT) {
+            connection.setDoOutput(true);
+        }
+
         if (config.getAuthenticator() != null) {
             connection.setAuthenticator(config.getAuthenticator());
         }
         for (String key : config.getRequestHeaders().headerKeys()) {
-            connection.setRequestProperty(key, config.getRequestHeaders().getHeader(key));
+            connection.setRequestProperty(key, config.getRequestHeaders().getSafeValue(key));
         }
 
         connection.setUseCaches(config.isUsingCaches());
