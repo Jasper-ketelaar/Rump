@@ -5,6 +5,7 @@ import dev.yasper.rump.client.DefaultRestClient;
 import dev.yasper.rump.client.RestClient;
 import dev.yasper.rump.config.RequestConfig;
 import dev.yasper.rump.exception.DefaultExceptionHandler;
+import dev.yasper.rump.request.JacksonRequestTransformer;
 import dev.yasper.rump.request.RequestMethod;
 import dev.yasper.rump.request.RequestParams;
 import dev.yasper.rump.response.HttpResponse;
@@ -28,7 +29,7 @@ public class Rump {
             .setUseCaches(false)
             .setRequestHeaders(new Headers())
             .setParams(new RequestParams())
-            .setRequestTransformer((obj, headers) -> obj)
+            .setRequestTransformer(new JacksonRequestTransformer())
             .setResponseTransformer(new JacksonResponseTransformer())
             .setRequestInterceptors(new LinkedList<>())
             .setResponseInterceptors(new LinkedList<>())
@@ -61,9 +62,9 @@ public class Rump {
         return DEFAULT_CLIENT.put(path, requestBody, responseType, configs);
     }
 
-    public static <T> HttpResponse<T> request(String path, RequestMethod method, Object requestBody,
+    public static <T> HttpResponse<T> request(String path, Object requestBody,
                                               Class<T> responseType, RequestConfig... configs) throws IOException {
-        return DEFAULT_CLIENT.request(path, method, requestBody, responseType, configs);
+        return DEFAULT_CLIENT.request(path, requestBody, responseType, configs);
     }
 
     public static <T> CompletableFuture<HttpResponse<T>> getAsync(String path, Class<T> responseType, RequestConfig... configs) {
