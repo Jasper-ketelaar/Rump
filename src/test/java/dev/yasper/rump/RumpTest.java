@@ -3,6 +3,7 @@ package dev.yasper.rump;
 import com.fasterxml.jackson.databind.JsonNode;
 import dev.yasper.rump.config.RequestConfig;
 import dev.yasper.rump.model.Post;
+import dev.yasper.rump.request.RequestMethod;
 import dev.yasper.rump.request.RequestParams;
 import dev.yasper.rump.response.HttpResponse;
 import org.junit.Assert;
@@ -75,6 +76,15 @@ public class RumpTest {
                 .setBody("quia et suscipit\nsuscipit recusandae consequuntur expedita et cum\nreprehenderit molestiae ut ut quas totam\nnostrum rerum est autem sunt rem eveniet architecto");
         HttpResponse<JsonNode> postRes = Rump.post("https://jsonplaceholder.typicode.com/posts/", match, JsonNode.class);
         Assert.assertEquals(postRes.getBody().get("id").asInt(), 101);
+    }
+
+    @Test
+    public void testOverridePost() throws IOException {
+        Post match = new Post()
+                .setTitle("sunt aut facere repellat provident occaecati excepturi optio reprehenderit")
+                .setBody("quia et suscipit\nsuscipit recusandae consequuntur expedita et cum\nreprehenderit molestiae ut ut quas totam\nnostrum rerum est autem sunt rem eveniet architecto");
+        HttpResponse<JsonNode> postRes = Rump.post("https://jsonplaceholder.typicode.com/posts/", match, JsonNode.class, RequestMethod.GET.toConfig());
+        Assert.assertFalse(postRes.getBody().has("id"));
     }
 
 }

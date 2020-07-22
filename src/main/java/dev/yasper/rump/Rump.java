@@ -50,6 +50,18 @@ public class Rump {
         return DEFAULT_CLIENT.getForObject(path, responseType, configs);
     }
 
+    public static <T> T postForObject(String path, Object requestBody, Class<T> responseType, RequestConfig... configs) throws IOException {
+        return DEFAULT_CLIENT.postForObject(path, requestBody, responseType, configs);
+    }
+
+    public static <T> T putForObject(String path, Object requestBody, Class<T> responseType, RequestConfig... configs) throws IOException {
+        return DEFAULT_CLIENT.putForObject(path, requestBody, responseType, configs);
+    }
+
+    public static <T> T deleteForObject(String path, Class<T> responseType, RequestConfig... configs) throws IOException {
+        return DEFAULT_CLIENT.deleteForObject(path, responseType, configs);
+    }
+
     public static <T> HttpResponse<T> get(String path, Class<T> responseType, RequestConfig... configs) throws IOException {
         return DEFAULT_CLIENT.get(path, responseType, configs);
     }
@@ -62,13 +74,57 @@ public class Rump {
         return DEFAULT_CLIENT.put(path, requestBody, responseType, configs);
     }
 
+    public static <T> HttpResponse<T> delete(String path, Class<T> responseType, RequestConfig... configs) throws IOException {
+        return DEFAULT_CLIENT.delete(path, responseType, configs);
+    }
+
+    public static HttpResponse<Void> head(String path, RequestConfig... configs) throws IOException {
+        return DEFAULT_CLIENT.head(path, configs);
+    }
+
     public static <T> HttpResponse<T> request(String path, Object requestBody,
                                               Class<T> responseType, RequestConfig... configs) throws IOException {
         return DEFAULT_CLIENT.request(path, requestBody, responseType, configs);
     }
 
+    public static <T> CompletableFuture<T> requestForObjectAsync(String path, RequestMethod method, Object requestBody, Class<T> responseType, RequestConfig... configs) {
+        return ASYNC_CLIENT.requestForObject(path, method, requestBody, responseType, configs);
+    }
+
+    public static <T> CompletableFuture<T> getForObjectAsync(String path, Class<T> responseType, RequestConfig... configs) {
+        return ASYNC_CLIENT.getForObject(path, responseType, configs);
+    }
+
+    public static <T> CompletableFuture<T> postForObjectAsync(String path, Object requestBody, Class<T> responseType, RequestConfig... configs) {
+        return ASYNC_CLIENT.postForObject(path, requestBody, responseType, configs);
+    }
+
+    public static <T> CompletableFuture<T> putForObjectAsync(String path, Object requestBody, Class<T> responseType, RequestConfig... configs) {
+        return ASYNC_CLIENT.putForObject(path, requestBody, responseType, configs);
+    }
+
+    public static <T> CompletableFuture<T> deleteForObjectAsync(String path, Class<T> responseType, RequestConfig... configs) {
+        return ASYNC_CLIENT.deleteForObject(path, responseType, configs);
+    }
+
     public static <T> CompletableFuture<HttpResponse<T>> getAsync(String path, Class<T> responseType, RequestConfig... configs) {
-        return requestAsync(path, RequestMethod.GET, null, responseType, configs);
+        return ASYNC_CLIENT.get(path, responseType, configs);
+    }
+
+    public static <T> CompletableFuture<HttpResponse<T>> postAsync(String path, Object requestBody, Class<T> responseType, RequestConfig... configs) {
+        return ASYNC_CLIENT.post(path, requestBody, responseType, configs);
+    }
+
+    public static <T> CompletableFuture<HttpResponse<T>> putAsync(String path, Object requestBody, Class<T> responseType, RequestConfig... configs) {
+        return ASYNC_CLIENT.put(path, requestBody, responseType, configs);
+    }
+
+    public static <T> CompletableFuture<HttpResponse<T>> deleteAsync(String path, Class<T> responseType, RequestConfig... configs) {
+        return ASYNC_CLIENT.delete(path, responseType, configs);
+    }
+
+    public static CompletableFuture<HttpResponse<Void>> headAsync(String path, RequestConfig... configs) {
+        return ASYNC_CLIENT.head(path, configs);
     }
 
     public static <T> CompletableFuture<HttpResponse<T>> requestAsync(String path, RequestMethod method, Object requestBody,

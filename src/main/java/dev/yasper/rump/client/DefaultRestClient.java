@@ -11,6 +11,7 @@ import dev.yasper.rump.response.HttpResponse;
 import dev.yasper.rump.response.ResponseBody;
 import dev.yasper.rump.response.ResponseTransformer;
 
+import javax.lang.model.type.NullType;
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.ProtocolException;
@@ -54,6 +55,10 @@ public class DefaultRestClient implements RestClient {
         return requestForObject(path, RequestMethod.PUT, requestBody, responseType, merging);
     }
 
+    public <T> T deleteForObject(String path, Class<T> responseType, RequestConfig... merging) throws IOException {
+        return requestForObject(path, RequestMethod.DELETE, null, responseType, merging);
+    }
+
     public <T> T requestForObject(String path, RequestMethod method, Object requestBody, Class<T> responseType,
                                   RequestConfig... merging) throws IOException {
         return request(path, method, requestBody, responseType, merging).getBody();
@@ -74,11 +79,25 @@ public class DefaultRestClient implements RestClient {
         return request(path, RequestMethod.GET, null, responseType, merging);
     }
 
+    public <T> HttpResponse<T> delete(String path, Class<T> repsonseType, RequestConfig... merging) throws IOException {
+        return request(path, RequestMethod.DELETE, null, repsonseType, merging);
+    }
+
+    public HttpResponse<Void> head(String path, RequestConfig... merging) throws IOException {
+        return request(path, RequestMethod.HEAD, null, Void.class, merging);
+    }
 
     public <T> HttpResponse<T> request(String path, RequestMethod method, Object requestBody,
                                        Class<T> responseType, RequestConfig... merging) throws IOException {
         return request(path, requestBody, responseType, this.config.merge(method.toConfig()).merge(merging));
     }
+
+    public <T> HttpResponse<T> request(String path, Object requestBody, Class<T> responseType,
+                                       RequestConfig... merging) throws IOException {
+        RequestConfig config = this.config.merge(merging);
+        return request(path, requestBody, responseType, config);
+    }
+
 
     private <T> HttpResponse<T> request(String path, Object requestBody, Class<T> responseType,
                                         RequestConfig config) throws IOException {
@@ -92,7 +111,7 @@ public class DefaultRestClient implements RestClient {
             return null;
         }
 
-        if (requestBody != null) {
+        if (requestBody != null && config.isOutputting()) {
             writeToConnection(connection, requestBody, config);
         }
 
@@ -132,12 +151,6 @@ public class DefaultRestClient implements RestClient {
         }
     }
 
-    public <T> HttpResponse<T> request(String path, Object requestBody, Class<T> responseType,
-                                       RequestConfig... merging) throws IOException {
-        RequestConfig config = this.config.merge(merging);
-        return request(path, requestBody, responseType, config);
-    }
-
     private HttpURLConnection openWithProxyIfPresent(URL url, Proxy proxy) throws IOException {
         if (proxy == null) {
             return (HttpURLConnection) url.openConnection();
@@ -170,7 +183,7 @@ public class DefaultRestClient implements RestClient {
         connection.setConnectTimeout(config.getTimeout());
         connection.setReadTimeout(config.getReadTimeout());
         connection.setRequestMethod(config.getMethod().toString());
-        if (config.getMethod() == RequestMethod.POST || config.getMethod() == RequestMethod.PUT) {
+        if (config.isOutputting()) {
             connection.setDoOutput(true);
         }
 
@@ -186,6 +199,10 @@ public class DefaultRestClient implements RestClient {
     }
 
     private <T> T transform(InputStream input, Class<T> responseType, RequestConfig config) throws IOException {
+        if (config.getMethod() == RequestMethod.HEAD) {
+            return null;
+        }
+
         if (responseType == ResponseBody.class || PRIMITIVE_CLASSES.contains(responseType)) {
             ResponseBody body = new ResponseBody(input);
             if (responseType == ResponseBody.class) {

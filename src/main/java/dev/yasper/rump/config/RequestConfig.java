@@ -84,6 +84,10 @@ public class RequestConfig {
                 '}';
     }
 
+    public boolean isOutputting() {
+        return getMethod() == RequestMethod.POST || getMethod() == RequestMethod.PUT;
+    }
+
     public Authenticator getAuthenticator() {
         return authenticator;
     }
