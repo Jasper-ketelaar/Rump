@@ -83,8 +83,8 @@ public class DefaultRestClient implements RestClient {
         return request(path, RequestMethod.DELETE, null, repsonseType, merging);
     }
 
-    public HttpResponse<?> head(String path, RequestConfig... merging) throws IOException {
-        return request(path, RequestMethod.HEAD, null, Object.class, merging);
+    public HttpResponse<Void> head(String path, RequestConfig... merging) throws IOException {
+        return request(path, RequestMethod.HEAD, null, Void.class, merging);
     }
 
     public <T> HttpResponse<T> request(String path, RequestMethod method, Object requestBody,
