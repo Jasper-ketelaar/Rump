@@ -2,7 +2,6 @@ package dev.yasper.rump;
 
 import dev.yasper.rump.config.RequestConfig;
 import dev.yasper.rump.model.Post;
-import dev.yasper.rump.request.RequestHeaders;
 import dev.yasper.rump.request.RequestParams;
 import dev.yasper.rump.response.HttpResponse;
 import org.junit.Assert;
@@ -46,9 +45,9 @@ public class RumpTest {
                 .add("test", 1)
                 .toConfig();
 
-        RequestConfig headers = new RequestHeaders()
+        RequestConfig headers = new Headers()
                 .setAuthentication("Bearer token")
-                .setContentType(RequestHeaders.ContentType.JSON)
+                .setContentType(Headers.ContentType.APPLICATION_JSON)
                 .setUserAgent("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.116 Safari/537.36")
                 .toConfig();
 

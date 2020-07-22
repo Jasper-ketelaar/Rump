@@ -1,5 +1,6 @@
 package dev.yasper.rump.client;
 
+import dev.yasper.rump.Headers;
 import dev.yasper.rump.Rump;
 import dev.yasper.rump.config.RequestConfig;
 import dev.yasper.rump.exception.HttpStatusCodeException;
@@ -94,11 +95,12 @@ public class DefaultRestClient implements RestClient {
             }
         }
 
+        Headers responseHeaders = new Headers(connection.getHeaderFields());
         if (connection.getResponseCode() > LAST_SUCCESSFUL_RESPONSE
                 && !config.getIgnoreStatusCode().test(connection.getResponseCode())) {
             ResponseBody body = new ResponseBody(connection.getInputStream());
             HttpResponse<String> errorResponse = new HttpResponse<>(
-                    body.getAsString(), connection.getHeaderFields(),
+                    body.getAsString(), responseHeaders,
                     connection.getResponseCode(), connection.getResponseMessage(),
                     config, urlMerged
             );
@@ -109,7 +111,7 @@ public class DefaultRestClient implements RestClient {
 
         T body = transform(connection.getInputStream(), responseType, config);
         HttpResponse<T> res = new HttpResponse<>(
-                body, connection.getHeaderFields(),
+                body, responseHeaders,
                 connection.getResponseCode(), connection.getResponseMessage(),
                 config, urlMerged
         );
@@ -155,7 +157,7 @@ public class DefaultRestClient implements RestClient {
             connection.setAuthenticator(config.getAuthenticator());
         }
         for (String key : config.getRequestHeaders().headerKeys()) {
-            connection.setRequestProperty(key, config.getRequestHeaders().getHeader(key));
+            connection.setRequestProperty(key, config.getRequestHeaders().getSafeValue(key));
         }
 
         connection.setUseCaches(config.isUsingCaches());

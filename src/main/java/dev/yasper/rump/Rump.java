@@ -5,7 +5,6 @@ import dev.yasper.rump.client.DefaultRestClient;
 import dev.yasper.rump.client.RestClient;
 import dev.yasper.rump.config.RequestConfig;
 import dev.yasper.rump.exception.DefaultExceptionHandler;
-import dev.yasper.rump.request.RequestHeaders;
 import dev.yasper.rump.request.RequestMethod;
 import dev.yasper.rump.request.RequestParams;
 import dev.yasper.rump.response.HttpResponse;
@@ -27,7 +26,7 @@ public class Rump {
             .setTimeout(7500)
             .setReadTimeout(7500)
             .setUseCaches(false)
-            .setRequestHeaders(new RequestHeaders())
+            .setRequestHeaders(new Headers())
             .setParams(new RequestParams())
             .setRequestTransformer((obj, headers) -> obj)
             .setResponseTransformer(new JacksonResponseTransformer())
