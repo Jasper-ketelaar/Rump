@@ -20,6 +20,7 @@ so I decided to make a version of that for Java that would fit my needs.
 - Create rest requests synchronously
 - Create rest requests asynchronously
 - Custom response mapper support by modifying request config (By default Rump uses Jackson)
+- Customer request body mapper support (By default Rump uses Jackson)
 - Request transformation before sending it out
 - Intercept requests/responses to modify them
 - Canceling of requests by using a request interceptor
@@ -138,6 +139,12 @@ to change the default base url for all static methods for example:
 ```java 
 Rump.DEFAULT_CONFIG.setBaseURL("https://www.new-default.org");
 ```
+
+## Mappers
+Rump supports configurable object mapping, but by default it uses Jackson. You can map request bodies
+using the `RequestTransformer` interface and overriding the config value. You can map response
+bodies by using the `ResponseTransformer` interface and overriding the config value. You can look at
+`JacksonRequestTransformer` and `JacksonResponseTransformer` for examples.
 
 ## Interceptors
 Interceptors can be used to intercept requests before they are fired and 
