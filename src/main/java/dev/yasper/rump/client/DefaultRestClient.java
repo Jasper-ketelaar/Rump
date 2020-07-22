@@ -102,7 +102,9 @@ public class DefaultRestClient implements RestClient {
                     connection.getResponseCode(), connection.getResponseMessage(),
                     config, urlMerged
             );
-            throw new HttpStatusCodeException(errorResponse);
+
+            config.getExceptionHandler().onHttpException(new HttpStatusCodeException(errorResponse));
+            return null;
         }
 
         T body = transform(connection.getInputStream(), responseType, config);

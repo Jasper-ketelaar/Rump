@@ -1,5 +1,6 @@
 package dev.yasper.rump.config;
 
+import dev.yasper.rump.exception.ExceptionHandler;
 import dev.yasper.rump.interceptor.RequestInterceptor;
 import dev.yasper.rump.interceptor.ResponseInterceptor;
 import dev.yasper.rump.request.RequestHeaders;
@@ -32,6 +33,7 @@ public class RequestConfig {
     private List<RequestInterceptor> requestInterceptors = new LinkedList<>();
     private List<ResponseInterceptor> responseInterceptors = new LinkedList<>();
     private RequestMethod method = null;
+    private ExceptionHandler exceptionHandler = null;
     private Predicate<Integer> ignoreStatusCode = null;
     private Consumer<HttpURLConnection> connectionConsumer = null;
 
@@ -88,6 +90,15 @@ public class RequestConfig {
 
     public RequestConfig setAuthenticator(Authenticator authenticator) {
         this.authenticator = authenticator;
+        return this;
+    }
+
+    public ExceptionHandler getExceptionHandler() {
+        return exceptionHandler;
+    }
+
+    public RequestConfig setExceptionHandler(ExceptionHandler exceptionHandler) {
+        this.exceptionHandler = exceptionHandler;
         return this;
     }
 

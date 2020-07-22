@@ -4,6 +4,7 @@ import dev.yasper.rump.client.AsyncRestClient;
 import dev.yasper.rump.client.DefaultRestClient;
 import dev.yasper.rump.client.RestClient;
 import dev.yasper.rump.config.RequestConfig;
+import dev.yasper.rump.exception.DefaultExceptionHandler;
 import dev.yasper.rump.request.RequestHeaders;
 import dev.yasper.rump.request.RequestMethod;
 import dev.yasper.rump.request.RequestParams;
@@ -34,6 +35,7 @@ public class Rump {
             .setResponseInterceptors(new LinkedList<>())
             .setMethod(RequestMethod.GET)
             .setIgnoreStatusCode((val) -> false)
+            .setExceptionHandler(new DefaultExceptionHandler())
             .setConnectionConsumer((connection -> {
             }));
     private static final ExecutorService DEFAULT_EXECUTOR = Executors.newFixedThreadPool(5);
