@@ -68,6 +68,12 @@ public class DefaultRestClient implements RestClient {
     /**
      * Calls {@link DefaultRestClient#requestForObject(String, RequestMethod, Object, Class, RequestConfig...)}
      * with the passed parameters and RequestMethod.GET
+     * @param path The path of this request, full URL if no base URL is specified in the config or any of the overloads
+     * @param responseType The type to parse the response as
+     * @param merging The configs from which to construct this request
+     * @return The {@link T} if everything is fine, else null
+     * @param <T> The required type of the response
+     * @throws IOException Thrown by HttpURLConnection methods
      */
     public <T> T getForObject(String path, Class<T> responseType,
                               RequestConfig... merging) throws IOException {
@@ -77,6 +83,13 @@ public class DefaultRestClient implements RestClient {
     /**
      * Calls {@link DefaultRestClient#requestForObject(String, RequestMethod, Object, Class, RequestConfig...)}
      * with the passed parameters and RequestMethod.POST
+     * @param path The path of this request, full URL if no base URL is specified in the config or any of the overloads
+     * @param requestBody The body to send with this request, applicable to POST and PUT only
+     * @param responseType The type to parse the response as
+     * @param merging The configs from which to construct this request
+     * @return The {@link T} if everything is fine, else null
+     * @param <T> The required type of the response
+     * @throws IOException Thrown by HttpURLConnection methods
      */
     public <T> T postForObject(String path, Object requestBody, Class<T> responseType,
                                RequestConfig... merging) throws IOException {
@@ -86,6 +99,13 @@ public class DefaultRestClient implements RestClient {
     /**
      * Calls {@link DefaultRestClient#requestForObject(String, RequestMethod, Object, Class, RequestConfig...)}
      * with the passed parameters and RequestMethod.PUT
+     * @param path The path of this request, full URL if no base URL is specified in the config or any of the overloads
+     * @param requestBody The body to send with this request, applicable to POST and PUT only
+     * @param responseType The type to parse the response as
+     * @param merging The configs from which to construct this request
+     * @return The {@link T} if everything is fine, else null
+     * @param <T> The required type of the response
+     * @throws IOException Thrown by HttpURLConnection methods
      */
     public <T> T putForObject(String path, Object requestBody, Class<T> responseType,
                               RequestConfig... merging) throws IOException {
@@ -95,6 +115,12 @@ public class DefaultRestClient implements RestClient {
     /**
      * Calls {@link DefaultRestClient#requestForObject(String, RequestMethod, Object, Class, RequestConfig...)}
      * with the passed parameters and RequestMethod.DELETE
+     * @param path The path of this request, full URL if no base URL is specified in the config or any of the overloads
+     * @param responseType The type to parse the response as
+     * @param merging The configs from which to construct this request
+     * @return The {@link T} if everything is fine, else null
+     * @param <T> The required type of the response
+     * @throws IOException Thrown by HttpURLConnection methods
      */
     public <T> T deleteForObject(String path, Class<T> responseType, RequestConfig... merging) throws IOException {
         return requestForObject(path, RequestMethod.DELETE, null, responseType, merging);
@@ -103,6 +129,14 @@ public class DefaultRestClient implements RestClient {
     /**
      * Calls {@link DefaultRestClient#request(String, RequestMethod, Object, Class, RequestConfig...)}
      * with the passed parameters and returns just the body
+     * @param path The path of this request, full URL if no base URL is specified in the config or any of the overloads
+     * @param method The request method for this request.
+     * @param requestBody The body to send with this request, applicable to POST and PUT only
+     * @param responseType The type to parse the response as
+     * @param merging The configs from which to construct this request
+     * @return The {@link HttpResponse} if everything is fine, else null
+     * @param <T> The required type of the response
+     * @throws IOException Thrown by HttpURLConnection methods
      */
     public <T> T requestForObject(String path, RequestMethod method, Object requestBody, Class<T> responseType,
                                   RequestConfig... merging) throws IOException {
@@ -112,6 +146,13 @@ public class DefaultRestClient implements RestClient {
     /**
      * Calls {@link DefaultRestClient#request(String, RequestMethod, Object, Class, RequestConfig...)}
      * with the passed parameters and RequestMethod.POST
+     * @param path The path of this request, full URL if no base URL is specified in the config or any of the overloads
+     * @param requestBody The body to send with this request, applicable to POST and PUT only
+     * @param responseType The type to parse the response as
+     * @param merging The configs from which to construct this request
+     * @return The {@link HttpResponse} if everything is fine, else null
+     * @param <T> The required type of the response
+     * @throws IOException Thrown by HttpURLConnection methods
      */
     public <T> HttpResponse<T> post(String path, Object requestBody, Class<T> responseType,
                                     RequestConfig... merging) throws IOException {
@@ -121,6 +162,13 @@ public class DefaultRestClient implements RestClient {
     /**
      * Calls {@link DefaultRestClient#request(String, RequestMethod, Object, Class, RequestConfig...)}
      * with the passed parameters and RequestMethod.PUT
+     * @param path The path of this request, full URL if no base URL is specified in the config or any of the overloads
+     * @param requestBody The body to send with this request, applicable to POST and PUT only
+     * @param responseType The type to parse the response as
+     * @param merging The configs from which to construct this request
+     * @return The {@link HttpResponse} if everything is fine, else null
+     * @param <T> The required type of the response
+     * @throws IOException Thrown by HttpURLConnection methods
      */
     public <T> HttpResponse<T> put(String path, Object requestBody, Class<T> responseType,
                                    RequestConfig... merging) throws IOException {
@@ -130,19 +178,39 @@ public class DefaultRestClient implements RestClient {
     /**
      * Calls {@link DefaultRestClient#request(String, RequestMethod, Object, Class, RequestConfig...)}
      * with the passed parameters and RequestMethod.GET
+     * @param path The path of this request, full URL if no base URL is specified in the config or any of the overloads
+     * @param responseType The type to parse the response as
+     * @param merging The configs from which to construct this request
+     * @return The {@link HttpResponse} if everything is fine, else null
+     * @param <T> The required type of the response
+     * @throws IOException Thrown by HttpURLConnection methods
      */
     public <T> HttpResponse<T> get(String path, Class<T> responseType,
                                    RequestConfig... merging) throws IOException {
         return request(path, RequestMethod.GET, null, responseType, merging);
     }
 
-    public <T> HttpResponse<T> delete(String path, Class<T> repsonseType, RequestConfig... merging) throws IOException {
-        return request(path, RequestMethod.DELETE, null, repsonseType, merging);
+    /**
+     * Calls {@link DefaultRestClient#request(String, RequestMethod, Object, Class, RequestConfig...)}
+     * with the passed parameters and RequestMethod.DELETE
+     * @param path The path of this request, full URL if no base URL is specified in the config or any of the overloads
+     * @param responseType The type to parse the response as
+     * @param merging The configs from which to construct this request
+     * @return The {@link HttpResponse} if everything is fine, else null
+     * @param <T> The required type of the response
+     * @throws IOException Thrown by HttpURLConnection methods
+     */
+    public <T> HttpResponse<T> delete(String path, Class<T> responseType, RequestConfig... merging) throws IOException {
+        return request(path, RequestMethod.DELETE, null, responseType, merging);
     }
 
     /**
      * Calls {@link DefaultRestClient#request(String, RequestMethod, Object, Class, RequestConfig...)}
      * with the passed parameters and RequestMethod.HEAD
+     * @param path The path of this request, full URL if no base URL is specified in the config or any of the overloads
+     * @param merging The configs from which to construct this request
+     * @return The {@link HttpResponse} if everything is fine, else null
+     * @throws IOException Thrown by HttpURLConnection methods
      */
     public HttpResponse<Void> head(String path, RequestConfig... merging) throws IOException {
         return request(path, RequestMethod.HEAD, null, Void.class, merging);
@@ -151,6 +219,14 @@ public class DefaultRestClient implements RestClient {
     /**
      * Calls {@link DefaultRestClient#request(String, Object, Class, RequestConfig)} with the passed parameters
      * and the configs merged, method is converted into a config too.
+     * @param path The path of this request, full URL if no base URL is specified in the config or any of the overloads
+     * @param method The request method for this request.
+     * @param requestBody The body to send with this request, applicable to POST and PUT only
+     * @param responseType The type to parse the response as
+     * @param merging The configs from which to construct this request
+     * @param <T> The required type of the response
+     * @return The {@link HttpResponse} if everything is fine, else null
+     * @throws IOException Thrown by HttpURLConnection methods
      */
     public <T> HttpResponse<T> request(String path, RequestMethod method, Object requestBody,
                                        Class<T> responseType, RequestConfig... merging) throws IOException {
@@ -160,6 +236,13 @@ public class DefaultRestClient implements RestClient {
     /**
      * Calls {@link DefaultRestClient#request(String, Object, Class, RequestConfig)} with the passed parameters
      * and the configs merged.
+     * @param path The path of this request, full URL if no base URL is specified in the config or any of the overloads
+     * @param requestBody The body to send with this request, applicable to POST and PUT only
+     * @param responseType The type to parse the response as
+     * @param merging The configs from which to construct this request
+     * @param <T> The required type of the response
+     * @return The {@link HttpResponse} if everything is fine, else null
+     * @throws IOException Thrown by HttpURLConnection methods
      */
     public <T> HttpResponse<T> request(String path, Object requestBody, Class<T> responseType,
                                        RequestConfig... merging) throws IOException {

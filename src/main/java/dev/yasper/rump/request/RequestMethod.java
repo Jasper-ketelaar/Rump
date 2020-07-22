@@ -31,15 +31,6 @@ public enum RequestMethod {
      * Transforms the request method to a configurable value usable as a config overload.
      * </p>
      *
-     * Example:
-     *
-     * <p>
-     * <code>
-     * RequestConfig config = POST.toConfig();<br/>
-     * HttpResponse<JsonNode> postRes = Rump.post("https://jsonplaceholder.typicode.com/posts/", match, JsonNode.class, config);
-     * </code>
-     * </p>
-     *
      * @return A RequestConfig instance where {@link RequestConfig#getMethod()} will return this {@link RequestMethod}
      */
     public RequestConfig toConfig() {
