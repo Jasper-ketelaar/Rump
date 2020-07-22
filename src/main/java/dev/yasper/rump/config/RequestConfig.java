@@ -18,10 +18,10 @@
  */
 package dev.yasper.rump.config;
 
+import dev.yasper.rump.Headers;
 import dev.yasper.rump.exception.ExceptionHandler;
 import dev.yasper.rump.interceptor.RequestInterceptor;
 import dev.yasper.rump.interceptor.ResponseInterceptor;
-import dev.yasper.rump.Headers;
 import dev.yasper.rump.request.RequestMethod;
 import dev.yasper.rump.request.RequestParams;
 import dev.yasper.rump.request.RequestTransformer;
@@ -142,6 +142,12 @@ public class RequestConfig {
         return this;
     }
 
+    /**
+     * Create a new request config that is a non-null merger of this instance and the passed merging instances
+     *
+     * @param merging varag request config array to merge this instance with
+     * @return The create request config
+     */
     public RequestConfig merge(RequestConfig... merging) {
         RequestConfig result = new RequestConfig();
         RequestConfig.copyProperties(result, this);

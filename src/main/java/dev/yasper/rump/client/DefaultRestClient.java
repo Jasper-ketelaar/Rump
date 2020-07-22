@@ -50,6 +50,13 @@ public class DefaultRestClient implements RestClient {
         this.config = config;
     }
 
+    /**
+     * Create a DefaultRestClient, constructor is protected to prevent a user creating a RequestConfig with a null
+     * value causing unexpected errors during execution.
+     *
+     * @param config The config instance for this rest client, this is merged with {@link Rump#DEFAULT_CONFIG}
+     * @return The created {@link DefaultRestClient}
+     */
     public static DefaultRestClient create(RequestConfig config) {
         return new DefaultRestClient(Rump.DEFAULT_CONFIG.merge(config));
     }
@@ -58,40 +65,72 @@ public class DefaultRestClient implements RestClient {
         return config;
     }
 
+    /**
+     * Calls {@link DefaultRestClient#requestForObject(String, RequestMethod, Object, Class, RequestConfig...)}
+     * with the passed parameters and RequestMethod.GET
+     */
     public <T> T getForObject(String path, Class<T> responseType,
                               RequestConfig... merging) throws IOException {
         return requestForObject(path, RequestMethod.GET, null, responseType, merging);
     }
 
+    /**
+     * Calls {@link DefaultRestClient#requestForObject(String, RequestMethod, Object, Class, RequestConfig...)}
+     * with the passed parameters and RequestMethod.POST
+     */
     public <T> T postForObject(String path, Object requestBody, Class<T> responseType,
                                RequestConfig... merging) throws IOException {
-        return requestForObject(path, RequestMethod.PUT, requestBody, responseType, merging);
+        return requestForObject(path, RequestMethod.POST, requestBody, responseType, merging);
     }
 
+    /**
+     * Calls {@link DefaultRestClient#requestForObject(String, RequestMethod, Object, Class, RequestConfig...)}
+     * with the passed parameters and RequestMethod.PUT
+     */
     public <T> T putForObject(String path, Object requestBody, Class<T> responseType,
                               RequestConfig... merging) throws IOException {
         return requestForObject(path, RequestMethod.PUT, requestBody, responseType, merging);
     }
 
+    /**
+     * Calls {@link DefaultRestClient#requestForObject(String, RequestMethod, Object, Class, RequestConfig...)}
+     * with the passed parameters and RequestMethod.DELETE
+     */
     public <T> T deleteForObject(String path, Class<T> responseType, RequestConfig... merging) throws IOException {
         return requestForObject(path, RequestMethod.DELETE, null, responseType, merging);
     }
 
+    /**
+     * Calls {@link DefaultRestClient#request(String, RequestMethod, Object, Class, RequestConfig...)}
+     * with the passed parameters and returns just the body
+     */
     public <T> T requestForObject(String path, RequestMethod method, Object requestBody, Class<T> responseType,
                                   RequestConfig... merging) throws IOException {
         return request(path, method, requestBody, responseType, merging).getBody();
     }
 
+    /**
+     * Calls {@link DefaultRestClient#request(String, RequestMethod, Object, Class, RequestConfig...)}
+     * with the passed parameters and RequestMethod.POST
+     */
     public <T> HttpResponse<T> post(String path, Object requestBody, Class<T> responseType,
                                     RequestConfig... merging) throws IOException {
         return request(path, RequestMethod.POST, requestBody, responseType, merging);
     }
 
+    /**
+     * Calls {@link DefaultRestClient#request(String, RequestMethod, Object, Class, RequestConfig...)}
+     * with the passed parameters and RequestMethod.PUT
+     */
     public <T> HttpResponse<T> put(String path, Object requestBody, Class<T> responseType,
                                    RequestConfig... merging) throws IOException {
         return request(path, RequestMethod.PUT, requestBody, responseType, merging);
     }
 
+    /**
+     * Calls {@link DefaultRestClient#request(String, RequestMethod, Object, Class, RequestConfig...)}
+     * with the passed parameters and RequestMethod.GET
+     */
     public <T> HttpResponse<T> get(String path, Class<T> responseType,
                                    RequestConfig... merging) throws IOException {
         return request(path, RequestMethod.GET, null, responseType, merging);
@@ -101,15 +140,27 @@ public class DefaultRestClient implements RestClient {
         return request(path, RequestMethod.DELETE, null, repsonseType, merging);
     }
 
+    /**
+     * Calls {@link DefaultRestClient#request(String, RequestMethod, Object, Class, RequestConfig...)}
+     * with the passed parameters and RequestMethod.HEAD
+     */
     public HttpResponse<Void> head(String path, RequestConfig... merging) throws IOException {
         return request(path, RequestMethod.HEAD, null, Void.class, merging);
     }
 
+    /**
+     * Calls {@link DefaultRestClient#request(String, Object, Class, RequestConfig)} with the passed parameters
+     * and the configs merged, method is converted into a config too.
+     */
     public <T> HttpResponse<T> request(String path, RequestMethod method, Object requestBody,
                                        Class<T> responseType, RequestConfig... merging) throws IOException {
         return request(path, requestBody, responseType, this.config.merge(method.toConfig()).merge(merging));
     }
 
+    /**
+     * Calls {@link DefaultRestClient#request(String, Object, Class, RequestConfig)} with the passed parameters
+     * and the configs merged.
+     */
     public <T> HttpResponse<T> request(String path, Object requestBody, Class<T> responseType,
                                        RequestConfig... merging) throws IOException {
         RequestConfig config = this.config.merge(merging);
@@ -117,6 +168,42 @@ public class DefaultRestClient implements RestClient {
     }
 
 
+    /**
+     * <p>
+     * Main method for creating any request. Converts the config into a url using {@link RequestConfig#getBaseURL()} and
+     * {@link RequestConfig#getParams()}. This url is then constructed into a HttpURLConnection using the Proxy defined in the
+     * config if it is present.
+     * </p>
+     *
+     * <p>
+     * On this instance the rest of the config values are applied and the RequestInterceptors are called. If any of them
+     * return false the request is canceled.
+     * </p>
+     *
+     * <p>
+     * The request body is written to the connections output stream. Now the request is completed and the repsonse parsing
+     * starts.
+     * </p>
+     *
+     * <p>
+     *     The response code is then checked for it to be erroneous using {@link RequestConfig#getIgnoreStatusCode()}
+     *     and if an error occurred a {@link HttpResponse} is constructed and sent to the error handler.
+     * </p>
+     *
+     * <p>
+     *     If no error has occurred the connection input stream is read and parsed to the requested type using the
+     *     response transformer. This is when the ResponseInterceptors are called and if any of them return false the
+     *     response is canceled. If everything passes we then return the {@link HttpResponse} with the response body.
+     * </p>
+     *
+     * @param path The path of this request, full URL if no base URL is specified in the config or any of the overloads
+     * @param requestBody The body to send with this request, applicable to POST and PUT only
+     * @param responseType The type to parse the response as
+     * @param config The config specifying the request
+     * @param <T> The required type of the response
+     * @return The {@link HttpResponse} if everything is fine, else null
+     * @throws IOException Thrown by HttpURLConnection methods
+     */
     private <T> HttpResponse<T> request(String path, Object requestBody, Class<T> responseType,
                                         RequestConfig config) throws IOException {
         String urlMerged = config.getBaseURL() + path + config.getParams().toURLPart();
