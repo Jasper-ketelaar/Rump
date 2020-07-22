@@ -1,9 +1,27 @@
+/**
+ * Rump is a REST client for Java that allows for easy configuration and default values.
+ *
+ * Copyright (C) 2020 Jasper Ketelaar
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
 package dev.yasper.rump.config;
 
+import dev.yasper.rump.Headers;
 import dev.yasper.rump.exception.ExceptionHandler;
 import dev.yasper.rump.interceptor.RequestInterceptor;
 import dev.yasper.rump.interceptor.ResponseInterceptor;
-import dev.yasper.rump.Headers;
 import dev.yasper.rump.request.RequestMethod;
 import dev.yasper.rump.request.RequestParams;
 import dev.yasper.rump.request.RequestTransformer;
@@ -124,6 +142,12 @@ public class RequestConfig {
         return this;
     }
 
+    /**
+     * Create a new request config that is a non-null merger of this instance and the passed merging instances
+     *
+     * @param merging varag request config array to merge this instance with
+     * @return The create request config
+     */
     public RequestConfig merge(RequestConfig... merging) {
         RequestConfig result = new RequestConfig();
         RequestConfig.copyProperties(result, this);

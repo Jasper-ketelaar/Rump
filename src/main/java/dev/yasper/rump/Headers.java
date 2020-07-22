@@ -1,3 +1,21 @@
+/**
+ * Rump is a REST client for Java that allows for easy configuration and default values.
+ *
+ * Copyright (C) 2020 Jasper Ketelaar
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
 package dev.yasper.rump;
 
 import dev.yasper.rump.config.RequestConfig;
@@ -7,18 +25,27 @@ import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.function.Supplier;
 
+/**
+ * Class for storing headers
+ */
 public class Headers {
 
     private final Map<String, Header> headers = new HashMap<>();
 
+    /**
+     * Headers instance constructed from a map of header fields
+     * @param headerFields the header fields from which this instance should be constructed
+     */
     public Headers(Map<String, List<String>> headerFields) {
         for (String key : headerFields.keySet()) {
             headers.put(key, new SimpleHeader(key, String.join(", ", headerFields.get(key))));
         }
     }
 
+    /**
+     * Default constructor for empty instance
+     */
     public Headers() {
-
     }
 
     public String getAccept() {
@@ -473,6 +500,11 @@ public class Headers {
         return this.headers.get(key);
     }
 
+    /**
+     * Gets the header value safely (if the header does not exist returns empty string)
+     * @param key the key to get the header value for
+     * @return the header value
+     */
     public String getSafeValue(String key) {
         Header header = getHeader(key);
         if (header == null) {
@@ -482,6 +514,10 @@ public class Headers {
         return header.getValue();
     }
 
+    /**
+     * Converts this Headers instance to a RequestConfig passable instance
+     * @return the request instance
+     */
     public RequestConfig toConfig() {
         return new RequestConfig()
                 .setRequestHeaders(this);
@@ -491,11 +527,23 @@ public class Headers {
         return setHeader(HeaderNames.AUTHORIZATION, authentication);
     }
 
+    /**
+     * Sets the header value directly
+     * @param key header key name
+     * @param value header value string
+     * @return Headers instance for setter chaining
+     */
     public Headers setHeader(String key, String value) {
         headers.put(key, new SimpleHeader(key, value));
         return this;
     }
 
+    /**
+     * Sets the header to a supplier value evaluated when the request is made
+     * @param key they header key to set
+     * @param supplier the supplier value to set the header to
+     * @return Headers instance for setter chaining
+     */
     public Headers setHeader(String key, Supplier<String> supplier) {
         headers.put(key, new SupplierHeader(key, supplier));
         return this;
@@ -528,6 +576,10 @@ public class Headers {
         ContentType(String code, Charset charset) {
             this.charset = charset;
             this.code = code;
+        }
+
+        public Charset getCharset() {
+            return charset;
         }
 
         public String getCode() {
@@ -576,7 +628,7 @@ public class Headers {
 
         @Override
         public String toString() {
-           return String.format("%s=%s", getName(), getValue());
+            return String.format("%s=%s", getName(), getValue());
         }
     }
 }
