@@ -7,10 +7,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.io.IOException;
-import java.net.InetSocketAddress;
-import java.net.Proxy;
-import java.net.SocketAddress;
-import java.net.SocketTimeoutException;
+import java.net.*;
 
 public class ProxyTest {
 
@@ -31,7 +28,7 @@ public class ProxyTest {
             String withProxy = this.withProxy.getForObject("https://api.ipify.org/?format=json", String.class);
             String res = Rump.getForObject("https://api.ipify.org/?format=json", String.class);
             Assert.assertNotEquals(withProxy, res);
-        } catch (SocketTimeoutException ignore) {
+        } catch (ConnectException | SocketTimeoutException ignore) {
             // This is fine, means the proxy is at least being applied.
         }
     }
